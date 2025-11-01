@@ -10,16 +10,37 @@ import { Input } from "@/components/ui/input";
 type LoginFormInputs = {
     email: string;
     password: string;
-    remember: boolean;
 };
 
-export default function Login() {
+export  default function Login() {
     const { register, handleSubmit, formState: { errors } } = useForm<LoginFormInputs>();
     const [showPassword, setShowPassword] = useState(false);
 
-    const onSubmit = (data: LoginFormInputs) => {
-        console.log("Form Data:", data);
+    const onSubmit =async (data: LoginFormInputs) => {
+        console.log("Form Data:", data.email);
         // Here you can handle API login
+
+        const payload = {
+            email:data.email,
+            password:data.password
+        }
+
+        try {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/auth/login`, {
+                method:"POST",
+                headers:{
+                    "Content-Type":"application/json"
+                },
+                body:JSON.stringify(payload),
+                credentials:"include"
+            })
+
+            const data = await res.json()
+            console.log(data);
+    
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     return (
@@ -77,14 +98,6 @@ export default function Login() {
 
                     {/* Remember me & forgot password */}
                     <div className="flex items-center justify-between text-sm">
-                        <label className="flex items-center gap-2">
-                            <Input
-                                type="checkbox"
-                                {...register("remember")}
-                                className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                            />
-                            Remember me
-                        </label>
                         <Link href="#" className="text-blue-600 hover:underline">
                             Forgot password?
                         </Link>
