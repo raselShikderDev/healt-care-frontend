@@ -1,9 +1,10 @@
-const Login = ()=>{
-    return(
+import Login from "@/components/modules/auth/login"
+
+const LoginPage = () => {
+    return (
         <>
-        
-        <p>Herre is the page for login </p>
+            <Login />
         </>
     )
 }
-export default Login
+export default LoginPage
