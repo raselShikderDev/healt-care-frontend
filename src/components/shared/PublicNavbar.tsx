@@ -19,18 +19,36 @@ import { Menu } from "lucide-react";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { ComponentProps } from "react";
 
-const PublicNavbar = (props: ComponentProps<typeof NavigationMenu>) => {
+const PublicNavbar = async (props: ComponentProps<typeof NavigationMenu>) => {
   const navItems = [
-    { name: "Home", href: "/" },
-    { name: "Consultation", href: "/consultations" },
-    { name: "Health plans", href: "/healthplans" },
-    { name: "Diagnostics", href: "/diagnostics" },
-    { name: "NGOs", href: "/ngo" },
+    { name: "Home", href: "/", role: "PUBLIC" },
+    { name: "Consultation", href: "/consultations", role: "PUBLIC" },
+    { name: "Health plans", href: "/healthplans", role: "PUBLIC" },
+    { name: "Diagnostics", href: "/diagnostics", role: "PUBLIC" },
+    { name: "NGOs", href: "/ngo", role: "PUBLIC" },
   ];
+
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/users/my-profile`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${""}`,
+        },
+        credentials: "include",
+      }
+    );
+
+    const data = await res.json();
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+  }
 
   return (
     <nav className="h-16 bg-background border-b">
-      <div className="h-full flex items-center justify-between max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="h-full flex items-center justify-between max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Logo */}
         <Logo />
 
@@ -56,8 +74,8 @@ const PublicNavbar = (props: ComponentProps<typeof NavigationMenu>) => {
         <div className="flex items-center gap-3">
           {/* Desktop login button */}
           <Link
-            href="#"
-            className="hidden md:inline-flex text-white bg-blue-500 rounded-sm px-5 py-1 hover:bg-blue-400 active:bg-transparent active:text-blue-500 active:border-blue-500 active:border active:font-semibold"
+            href="/login"
+            className="hidden md:inline-flex text-white bg-blue-500 rounded px-5 py-2 font-semibold hover:bg-blue-400 active:bg-transparent active:text-blue-500 active:border-blue-500 active:border active:font-semibold"
           >
             Log In
           </Link>
@@ -66,7 +84,11 @@ const PublicNavbar = (props: ComponentProps<typeof NavigationMenu>) => {
           <div className="md:hidden">
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="outline" size="icon">
+                <Button
+                  className="cursor-pointer"
+                  variant="outline"
+                  size="icon"
+                >
                   <Menu />
                 </Button>
               </SheetTrigger>
@@ -95,9 +117,12 @@ const PublicNavbar = (props: ComponentProps<typeof NavigationMenu>) => {
 
                 {/* Footer inside sheet */}
                 <SheetFooter className="mt-auto border-t pt-4">
-                  <Button className="w-full bg-blue-500 text-white hover:bg-blue-400">
+                  <Link
+                    href={"/login"}
+                    className="w-full py-2 font-semibold text-center rounded-xl cursor-pointer bg-blue-500 text-white hover:bg-blue-400"
+                  >
                     Log In
-                  </Button>
+                  </Link>
                 </SheetFooter>
               </SheetContent>
             </Sheet>
