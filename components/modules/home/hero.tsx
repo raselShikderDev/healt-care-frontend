@@ -10,7 +10,7 @@ import Link from "next/link";
 
 export default function HeroSection() {
     return (
-        <div className="min-h-screen w-full relative">
+        <div className="w-full relative">
             {/* Radial Gradient Background from Bottom */}
             <div
                 className="absolute inset-0 z-0"
