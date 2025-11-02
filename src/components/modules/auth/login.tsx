@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import checkAuthStatus from "@/utility/auth";
+import loginUser from "@/utility/loginuser";
 
 type LoginFormInputs = {
   email: string;
@@ -25,38 +27,45 @@ export default function Login() {
   const router = useRouter();
 
   const onSubmit = async (data: LoginFormInputs) => {
-    console.log("Form Data:", data.email);
-    // Here you can handle API login
-
     const payload = {
       email: data.email,
       password: data.password,
     };
-
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/auth/login`,
-        {
-          //   const res = await fetch(`http://localhost:5000/api/v1/auth/login`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-          credentials: "include",
-        }
-      );
+      const res = await loginUser(payload)
 
-      const data = await res.json();
-      if (data.success) {
-        toast.success("Successfully logged in");
-        router.push("/");
+      if (res.ok) {
+        const authStatus = await checkAuthStatus()
+        if (authStatus.isAuthenticated && authStatus.user) {
+          const { role } = authStatus.user
+          switch (role) {
+            case "ADMIN":
+              toast.success("Admin successfully logged in");
+              router.push("/dashboard");
+              break;
+            case "PATIENT":
+              toast.success("Patient successfully logged in");
+              router.push("/dashboard");
+              break;
+            case "DOCTOR":
+              toast.success("Doctor successfully logged in");
+              router.push("/dashboard");
+              break;
+
+            default:
+              router.push("/");
+              break;
+          }
+        }
+        toast.error("Somthing went wrong! Login failed");
       }
-      console.log(data);
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      toast.error(error.message || "Login failed");
+      console.error(error.message || "Login failed. Please check your credentials and try again.")
     }
   };
+
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
@@ -77,9 +86,8 @@ export default function Login() {
             <Input
               id="email"
               {...register("email", { required: "Email is required" })}
-              className={`mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 outline-none ${
-                errors.email ? "border-red-500" : "border-gray-300"
-              }`}
+              className={`mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 outline-none ${errors.email ? "border-red-500" : "border-gray-300"
+                }`}
               placeholder="you@example.com"
             />
             {errors.email && (
@@ -102,9 +110,8 @@ export default function Login() {
                 type={showPassword ? "text" : "password"}
                 id="password"
                 {...register("password", { required: "Password is required" })}
-                className={`block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 outline-none pr-10 ${
-                  errors.password ? "border-red-500" : "border-gray-300"
-                }`}
+                className={`block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 outline-none pr-10 ${errors.password ? "border-red-500" : "border-gray-300"
+                  }`}
                 placeholder="Enter your password"
               />
               <Button
