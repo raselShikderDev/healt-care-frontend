@@ -18,6 +18,7 @@ import {
 import { Menu } from "lucide-react";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { ComponentProps } from "react";
+import checkAuthStatus from "@/utility/auth";
 
 const PublicNavbar = async (props: ComponentProps<typeof NavigationMenu>) => {
   const navItems = [
@@ -29,18 +30,19 @@ const PublicNavbar = async (props: ComponentProps<typeof NavigationMenu>) => {
   ];
 
   try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/users/my-profile`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${""}`,
-        },
-        credentials: "include",
-      }
-    );
+    // const res = await fetch(
+    //   `${process.env.NEXT_PUBLIC_BASE_URL}/users/my-profile`,
+    //   {
+    //     method: "GET",
+    //     headers: {
+    //       Authorization: `Bearer ${""}`,
+    //     },
+    //     credentials: "include",
+    //   }
+    // );
 
-    const data = await res.json();
+    // const data = await res.json();
+    const data = await checkAuthStatus()
     console.log(data);
   } catch (error) {
     console.error(error);

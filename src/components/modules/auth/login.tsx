@@ -32,12 +32,16 @@ export default function Login() {
       password: data.password,
     };
     try {
-      const res = await loginUser(payload)
+      const res = await loginUser(payload);
+      // console.log("[In login.tsx] res in login file", res);
+      console.log("[In login.tsx] res.success", res.success);
 
-      if (res.ok) {
-        const authStatus = await checkAuthStatus()
+      if (res.success) {
+        const authStatus = await checkAuthStatus();
+        console.log("[In login.tsx] authStatus", authStatus);
+
         if (authStatus.isAuthenticated && authStatus.user) {
-          const { role } = authStatus.user
+          const { role } = authStatus.user;
           switch (role) {
             case "ADMIN":
               toast.success("Admin successfully logged in");
@@ -57,15 +61,19 @@ export default function Login() {
               break;
           }
         }
+      } else {
         toast.error("Somthing went wrong! Login failed");
       }
+      
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       toast.error(error.message || "Login failed");
-      console.error(error.message || "Login failed. Please check your credentials and try again.")
+      console.error(
+        error.message ||
+          "Login failed. Please check your credentials and try again."
+      );
     }
   };
-
-
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
@@ -86,8 +94,9 @@ export default function Login() {
             <Input
               id="email"
               {...register("email", { required: "Email is required" })}
-              className={`mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 outline-none ${errors.email ? "border-red-500" : "border-gray-300"
-                }`}
+              className={`mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 outline-none ${
+                errors.email ? "border-red-500" : "border-gray-300"
+              }`}
               placeholder="you@example.com"
             />
             {errors.email && (
@@ -110,8 +119,9 @@ export default function Login() {
                 type={showPassword ? "text" : "password"}
                 id="password"
                 {...register("password", { required: "Password is required" })}
-                className={`block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 outline-none pr-10 ${errors.password ? "border-red-500" : "border-gray-300"
-                  }`}
+                className={`block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 outline-none pr-10 ${
+                  errors.password ? "border-red-500" : "border-gray-300"
+                }`}
                 placeholder="Enter your password"
               />
               <Button

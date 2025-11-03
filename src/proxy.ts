@@ -2,7 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 
 export function proxy(request: NextRequest) {
   const token = request.cookies.get("accessToken")?.value;
-  console.log("token", token);
+  // console.log("token", token);
 
   const { pathname } = request.nextUrl;
 
@@ -13,10 +13,10 @@ export function proxy(request: NextRequest) {
   const isProtectedPath = protectedRoute.some((path) => {
     pathname.startsWith(path);
   });
-  console.log("isProtectedPath", isProtectedPath);
+  // console.log("isProtectedPath", isProtectedPath);
 
   const isAuthRoutes = authRoutes.some((path) => pathname === path);
-  console.log("isAuthRoutes", isAuthRoutes);
+  // console.log("isAuthRoutes", isAuthRoutes);
 
   if (isProtectedPath && !token) {
     return NextResponse.redirect(new URL("/login", request.url));
