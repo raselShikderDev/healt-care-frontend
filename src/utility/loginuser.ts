@@ -19,9 +19,7 @@ const loginUser = async (payload: LoginFormInputs) => {
 
 
     const data = await res.json();
-    console.log("data in loginUser.tsx: ", data);
-    
-    if (data && data.success) {
+    if (data.success) {
       console.log("[In login.tsx] data", data);
       return data
     }
