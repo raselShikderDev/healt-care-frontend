@@ -1,7 +1,10 @@
+"use client"
+
 import * as React from "react"
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -11,6 +14,10 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar"
+import Link from "next/link"
+import checkAuthStatus from "@/utility/auth";
+import { Button } from "./ui/button";
+import { Separator } from "./ui/separator";
 
 // This is sample data.
 const data = {
@@ -50,7 +57,7 @@ const data = {
           title: "Caching",
           url: "#",
         },
-        
+
       ],
     },
     {
@@ -65,12 +72,14 @@ const data = {
           title: "File Conventions",
           url: "#",
         },
-        
+
       ],
     },
 
   ],
 }
+const authStatus = await checkAuthStatus();
+        console.log("[In app side bar] authStatus", authStatus);
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
@@ -87,7 +96,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 {item.items.map((item) => (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild isActive={item.isActive}>
-                      <a href={item.url}>{item.title}</a>
+                      <Link href={item.url}>{item.title}</Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}
@@ -96,6 +105,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarGroup>
         ))}
       </SidebarContent>
+      <Separator />
+      <SidebarFooter className="pt-3">
+        <Button
+          variant={"destructive"}
+          className="w-full py-2 font-semibold text-center cursor-pointer"
+        >
+          logout
+        </Button>
+      </SidebarFooter>
       <SidebarRail />
     </Sidebar>
   )
