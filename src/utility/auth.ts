@@ -1,6 +1,5 @@
 const checkAuthStatus = async () => {
   console.log("getting the profile");
-
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/users/my-profile`,

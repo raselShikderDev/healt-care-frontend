@@ -30,20 +30,9 @@ const PublicNavbar = async (props: ComponentProps<typeof NavigationMenu>) => {
   ];
 
   try {
-    // const res = await fetch(
-    //   `${process.env.NEXT_PUBLIC_BASE_URL}/users/my-profile`,
-    //   {
-    //     method: "GET",
-    //     headers: {
-    //       Authorization: `Bearer ${""}`,
-    //     },
-    //     credentials: "include",
-    //   }
-    // );
-
     // const data = await res.json();
     const data = await checkAuthStatus()
-    console.log(data);
+    console.log("in navbar data", data);
   } catch (error) {
     console.error(error);
   }
