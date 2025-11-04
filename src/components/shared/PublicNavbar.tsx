@@ -32,7 +32,7 @@ const PublicNavbar = (props: ComponentProps<typeof NavigationMenu>) => {
   ];
 
   const { user } = useUser();
-console.log(user);
+  console.log(user);
 
   if (user?.role) {
     navItems.push({
@@ -41,6 +41,9 @@ console.log(user);
       role: user?.role,
     });
   }
+
+  console.log(user);
+
   return (
     <nav className="h-16 bg-background border-b">
       <div className="h-full flex items-center justify-between max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -101,9 +104,6 @@ console.log(user);
                 {/* Header inside sheet */}
                 <div className="flex items-center justify-between">
                   <Logo />
-                  <VisuallyHidden>
-                    <SheetTitle>Navigation Menu</SheetTitle>
-                  </VisuallyHidden>
                 </div>
 
                 {/* Navigation links */}
@@ -121,7 +121,7 @@ console.log(user);
 
                 {/* Footer inside sheet */}
                 <SheetFooter className="mt-auto border-t pt-4">
-                  {!user?.email && (
+                  {!user?.role && (
                     <Link
                       href={"/login"}
                       className="w-full py-2 font-semibold text-center rounded-xl cursor-pointer bg-blue-500 text-white hover:bg-blue-400"
@@ -129,10 +129,10 @@ console.log(user);
                       Log In
                     </Link>
                   )}
-                  {user?.email && (
+                  {user?.role && (
                     <Button
                       variant={"destructive"}
-                      className="hidden md:inline-flex cursor-pointer"
+                      className="inline-flex cursor-pointer"
                     >
                       LogOut
                     </Button>

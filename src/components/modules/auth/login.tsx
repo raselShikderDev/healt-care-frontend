@@ -2,7 +2,7 @@
 
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2, LogIn } from "lucide-react";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -23,8 +23,9 @@ export default function Login() {
     handleSubmit,
     formState: { errors },
   } = useForm<LoginFormInputs>();
-  const [showPassword, setShowPassword] = useState(false);
-  const {user, setUser} = useUser()
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { user, setUser } = useUser();
 
   const router = useRouter();
 
@@ -34,6 +35,7 @@ export default function Login() {
       password: data.password,
     };
     try {
+      setIsLoading(true);
       const res = await loginUser(payload);
       // console.log("[In login.tsx] res in login file", res);
       console.log("[In login.tsx] res.success", res.success);
@@ -41,7 +43,7 @@ export default function Login() {
 
       if (res.success) {
         const authStatus = await checkAuthStatus();
-        setUser(authStatus.user)
+        setUser(authStatus.user);
         console.log("[In login.tsx] authStatus", authStatus);
         // if (condition) {
         // }
@@ -79,16 +81,18 @@ export default function Login() {
         error.message ||
           "Login failed. Please check your credentials and try again."
       );
+    } finally {
+      setIsLoading(false);
     }
   };
+  console.log({ user: user });
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="max-w-md w-full bg-white p-8 rounded-2xl shadow-lg">
         <h2 className="text-2xl font-bold text-gray-900 text-center mb-6">
-          Login to Your Account
+          {isLoading ? "Logging in" : "Login to Your Account"}
         </h2>
-
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {/* Email */}
           <div>
@@ -162,8 +166,14 @@ export default function Login() {
           <Button
             type="submit"
             className="w-full cursor-pointer py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+            disabled={isLoading}
           >
-            Login
+            {isLoading ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              <LogIn className="w-5 h-5" />
+            )}
+            {!isLoading && "LogIn"}
           </Button>
         </form>
 

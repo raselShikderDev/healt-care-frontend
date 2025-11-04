@@ -1,13 +1,8 @@
-"use client"
+"use client";
 
 import { IUser } from "@/types/types";
 import checkAuthStatus from "@/utility/auth";
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 interface IUserContext {
   user: IUser | null;
@@ -43,6 +38,9 @@ export const UserProvider = ({
         setUser(null);
       }
     };
+    if (!user) {
+      revaldate();
+    }
   }, [user]);
 
   return (
