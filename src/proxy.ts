@@ -14,13 +14,10 @@ const roleBasedRoutes = {
 };
 
 const authRoutes = ["/login", "/signup", "/forget-password"];
-// const protectedRoute = ["/dashboard/*", "dashboard"];
 
 export async function proxy(request: NextRequest) {
   const accessToken = request.cookies.get("accessToken")?.value;
   const refreshToken = request.cookies.get("refreshToken")?.value;
-
-  // console.log("token", token);
 
   const { pathname } = request.nextUrl;
 
@@ -34,7 +31,7 @@ export async function proxy(request: NextRequest) {
 
   if (accessToken) {
     try {
-      user = jwtDecode(accessToken); // {id:number, }
+      user = jwtDecode(accessToken); 
     } catch (error) {
       console.log(error);
       return NextResponse.redirect(
@@ -101,7 +98,7 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/dashboard/:path", "/login", "/signup", "/forget-password"],
+  matcher: ["/admin/dashboard", "/login", "/signup", "/forget-password"],
 };
 
 

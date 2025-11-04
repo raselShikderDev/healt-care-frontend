@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
   Sidebar,
   SidebarContent,
@@ -13,11 +13,14 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-} from "@/components/ui/sidebar"
-import Link from "next/link"
-import checkAuthStatus from "@/utility/auth";
+} from "@/components/ui/sidebar";
+import Link from "next/link";
 import { Button } from "./ui/button";
 import { Separator } from "./ui/separator";
+import { useState } from "react";
+import { logOutUser } from "@/utility/logoutUser";
+import { Loader2, LogOut } from "lucide-react";
+import { useUser } from "@/providers/userProvider";
 
 // This is sample data.
 const data = {
@@ -57,7 +60,6 @@ const data = {
           title: "Caching",
           url: "#",
         },
-
       ],
     },
     {
@@ -72,20 +74,30 @@ const data = {
           title: "File Conventions",
           url: "#",
         },
-
       ],
     },
-
   ],
-}
-const authStatus = await checkAuthStatus();
-        console.log("[In app side bar] authStatus", authStatus);
+};
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { setUser } = useUser();
+
+  const handleLogout = async () => {
+    try {
+      setIsLoading(true);
+      await logOutUser();
+      setUser(null);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Sidebar {...props}>
-      <SidebarHeader>
-      </SidebarHeader>
+      <SidebarHeader></SidebarHeader>
       <SidebarContent>
         {/* We create a SidebarGroup for each parent. */}
         {data.navMain.map((item) => (
@@ -110,11 +122,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <Button
           variant={"destructive"}
           className="w-full py-2 font-semibold text-center cursor-pointer"
+          onClick={handleLogout}
+          disabled={isLoading}
         >
-          logout
+          {isLoading ? (
+            <Loader2 className="w-5 h-5 animate-spin" />
+          ) : (
+            <LogOut className="w-5 h-5" />
+          )}
+          {!isLoading && "logout"}
         </Button>
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }

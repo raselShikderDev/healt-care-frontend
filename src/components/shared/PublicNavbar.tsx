@@ -7,7 +7,6 @@ import {
   Sheet,
   SheetContent,
   SheetFooter,
-  SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
 import {
@@ -17,12 +16,15 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
-import { Menu } from "lucide-react";
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
-import { ComponentProps } from "react";
+import { Loader2, LogOut, Menu } from "lucide-react";
+import { ComponentProps, useState } from "react";
 import { useUser } from "@/providers/userProvider";
+import { logOutUser } from "@/utility/logoutUser";
 
 const PublicNavbar = (props: ComponentProps<typeof NavigationMenu>) => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { setUser } = useUser();
+
   const navItems = [
     { name: "Home", href: "/", role: "PUBLIC" },
     { name: "Consultation", href: "/consultations", role: "PUBLIC" },
@@ -42,8 +44,17 @@ const PublicNavbar = (props: ComponentProps<typeof NavigationMenu>) => {
     });
   }
 
-  console.log(user);
-
+  const handleLogout = async () => {
+    try {
+      setIsLoading(true);
+      await logOutUser();
+      setUser(null);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   return (
     <nav className="h-16 bg-background border-b">
       <div className="h-full flex items-center justify-between max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -82,8 +93,15 @@ const PublicNavbar = (props: ComponentProps<typeof NavigationMenu>) => {
             <Button
               variant={"destructive"}
               className="hidden md:inline-flex cursor-pointer"
+              disabled={isLoading}
+              onClick={handleLogout}
             >
-              LogOut
+              {isLoading ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <LogOut className="w-5 h-5" />
+              )}
+              {!isLoading && "logout"}
             </Button>
           )}
 
@@ -133,8 +151,15 @@ const PublicNavbar = (props: ComponentProps<typeof NavigationMenu>) => {
                     <Button
                       variant={"destructive"}
                       className="inline-flex cursor-pointer"
+                      disabled={isLoading}
+                      onClick={handleLogout}
                     >
-                      LogOut
+                      {isLoading ? (
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                      ) : (
+                        <LogOut className="w-5 h-5" />
+                      )}
+                      {!isLoading && "logout"}
                     </Button>
                   )}
                 </SheetFooter>
