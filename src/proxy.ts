@@ -1,29 +1,17 @@
 import { NextResponse, NextRequest } from "next/server";
-import { jwtDecode } from "jwt-decode"
+import { jwtDecode } from "jwt-decode";
+import { IUser } from "./types/types";
 
 
-interface IUser {
-  id: number;
-  email: string;
-  role: "ADMIN" | "DOCTROR" | "PATIENT";
-  exp: number;
-  ia: number;
-}
 
 const roleBasedRoutes = {
-  DOCTOR:["/doctor/dashboard/*"],
-  ADMIN:[
-    "/admin/dashaboard",
-    "/admin/manage-doctors",
-    "/admin/manage-patients",
+  DOCTOR: ["/doctor/dashboard"],
+  ADMIN: ["/admin/dashboard"],
+  PATIENT: ["/patient/dashboard",
+    "/patient/appointments",
+    "/patient/medical-records",
   ],
-  PATIENT:[
-    "/patient/dashaboard",
-    "/patient/manage-doctors",
-    "/patient/manage-patients",
-  ],
-}
-
+};
 
 const authRoutes = ["/login", "/signup", "/forget-password"];
 // const protectedRoute = ["/dashboard/*", "dashboard"];
@@ -36,26 +24,26 @@ export async function proxy(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
-
   if (!accessToken && !refreshToken && !authRoutes.includes(pathname)) {
-    return NextResponse.redirect(new URL(`login?redirect=${pathname}`, request.url))
+    return NextResponse.redirect(
+      new URL(`/login?redirect=${pathname}`, request.url)
+    );
   }
 
-
-  let user: IUser | null = null
+  let user: IUser | null = null;
 
   if (accessToken) {
     try {
-      user = jwtDecode(accessToken) // {id:number, }
-      console.log(user);
-
+      user = jwtDecode(accessToken); // {id:number, }
     } catch (error) {
       console.log(error);
-      return NextResponse.redirect(new URL(`login?redirect=${pathname}`, request.url))
+      return NextResponse.redirect(
+        new URL(`/login?redirect=${pathname}`, request.url)
+      );
     }
   }
 
-  if (user && refreshToken) {
+  if (!user && refreshToken) {
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_BASE_URL}/auth/refresh-token`,
@@ -67,56 +55,160 @@ export async function proxy(request: NextRequest) {
           credentials: "include",
         }
       );
-      console.log("[in proxy.ts] res: ", res);
       const data = await res.json();
-      console.log("[in proxy.ts] data: ", data);
 
       if (data.success) {
         const newAccessToken = request.cookies.get("accessToken")?.value;
-        user = jwtDecode(newAccessToken as string)
-        return NextResponse.next()
+        user = jwtDecode(newAccessToken as string);
+        return NextResponse.next();
       } else {
-        const response = NextResponse.redirect(new URL(`login?redirect=${pathname}`, request.url))
-        response.cookies.delete("refreshToken")
-        response.cookies.delete("accessToken")
-        return response
+        const response = NextResponse.redirect(
+          new URL(`/login?redirect=${pathname}`, request.url)
+        );
+        response.cookies.delete("refreshToken");
+        response.cookies.delete("accessToken");
+        return response;
       }
-
     } catch (error) {
       console.error(error);
-      const response = NextResponse.redirect(new URL(`login?redirect=${pathname}`, request.url))
-      response.cookies.delete("refreshToken")
-      response.cookies.delete("accessToken")
-      return response
+      const response = NextResponse.redirect(
+        new URL(`login?redirect=${pathname}`, request.url)
+      );
+      response.cookies.delete("refreshToken");
+      response.cookies.delete("accessToken");
+      return response;
     }
   }
 
+  if (user) {
+    const allowedroutes = user ? roleBasedRoutes[user.role] : [];
 
+    if (
+      allowedroutes &&
+      allowedroutes.some((path) => pathname.startsWith(path))
+    ) {
+      return NextResponse.next();
+    } else {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+  }
 
-  // const isProtectedPath = protectedRoute.some((path) => {
-  //   pathname.startsWith(path);
-  // });
-  // // console.log("isProtectedPath", isProtectedPath);
-
-  // const isAuthRoutes = authRoutes.some((path) => pathname === path);
-  // // console.log("isAuthRoutes", isAuthRoutes);
-
-  // if (isProtectedPath && !accessToken) {
-  //   return NextResponse.redirect(new URL("/login", request.url));
-  // }
-
-  // if (isAuthRoutes && accessToken) {
-  //   return NextResponse.redirect(new URL("/", request.url));
-  // }
-  // console.log(`pathname.startsWith("/dashboard"): ${pathname.startsWith("/dashboard")}`);
-
-  // if (pathname.startsWith("/dashboard") && !accessToken) {
-  //   return NextResponse.redirect(new URL("/", request.url));
-  // }
+  if (user && authRoutes.includes(pathname)) {
+    return NextResponse.redirect(new URL("/", request.url));
+  }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/login", "/signup", "/forget-password"],
+  matcher: ["/admin/dashboard/:path", "/login", "/signup", "/forget-password"],
 };
+
+
+// import { NextResponse } from "next/server";
+// import type { NextRequest } from "next/server";
+// import { jwtDecode } from "jwt-decode";
+
+// interface userInterface {
+//   id: number;
+//   email: string;
+//   role: "ADMIN" | "DOCTOR" | "PATIENT";
+//   exp: number;
+//   ia: number;
+// }
+
+// const roleBasedRoutes = {
+//   ADMIN: ["/admin/dashboard",],
+//   DOCTOR: ["/doctor/dashboard"],
+//   PATIENT: [
+//     "/patient/dashboard",
+//     "/patient/appointments",
+//     "/patient/medical-records",
+//   ],
+// };
+
+// const authRoutes = ["/login", "/register", "/forgot-password"];
+
+// export async function proxy(request: NextRequest) {
+//   const accessToken = request.cookies.get("accessToken")?.value;
+//   const refreshToken = request.cookies.get("refreshToken")?.value;
+
+//   const { pathname } = request.nextUrl;
+
+//   if (!accessToken && !refreshToken && !authRoutes.includes(pathname)) {
+//     return NextResponse.redirect(
+//       new URL(`/login?redirect=${pathname}`, request.url)
+//     );
+//   }
+
+//   let user: userInterface | null = null;
+
+//   if (accessToken) {
+//     try {
+//       user = jwtDecode(accessToken); // {id: string, email: string, role: "ADMIN"| "DOCTOR" | "PATIENT", exp: number, iat: number}
+//     } catch (err) {
+//       console.log("Error decoding access token:", err);
+//       return NextResponse.redirect(
+//         new URL(`/login?redirect=${pathname}`, request.url)
+//       );
+//     }
+//   }
+
+//   if (!user && refreshToken) {
+//     try {
+//       const refreshRes = await fetch(
+//         `${process.env.NEXT_PUBLIC_API_URL}/auth/refresh-token`,
+//         {
+//           method: "POST",
+//           headers: {
+//             "Content-Type": "application/json",
+//           },
+//           body: JSON.stringify({ refreshToken }),
+//         }
+//       );
+//       if (refreshRes.ok) {
+//         const newAccessToken = request.cookies.get("accessToken")?.value;
+//         user = jwtDecode(newAccessToken!);
+//         return NextResponse.next();
+//       } else {
+//         const response = NextResponse.redirect(
+//           new URL(`/login?redirect=${pathname}`, request.url)
+//         );
+//         response.cookies.delete("accessToken");
+//         response.cookies.delete("refreshToken");
+//         return response;
+//       }
+//     } catch (err) {
+//       console.log("Error refreshing token:", err);
+//       const response = NextResponse.redirect(
+//         new URL(`/login?redirect=${pathname}`, request.url)
+//       );
+//       response.cookies.delete("accessToken");
+//       response.cookies.delete("refreshToken");
+//       return response;
+//     }
+//   }
+
+
+//    if(user){
+//     const allowedRoutes = user ? roleBasedRoutes[user.role] : [];
+//     if(allowedRoutes && allowedRoutes.some((r)=>pathname.startsWith(r))){
+//         return NextResponse.next();
+//     }else{
+//         return NextResponse.redirect(new URL(`/unauthorized`, request.url));
+//     }
+//    }
+
+//    if(user && authRoutes.includes(pathname)){
+//     return NextResponse.redirect(new URL(`/`));
+//    }
+   
+
+
+//   return NextResponse.next();
+// }
+
+// // See "Matching Paths" below to learn more
+// export const config = {
+//   matcher: ["/admin/dashboard/:path*", "/login", "/register", "/forgot-password"],
+// };

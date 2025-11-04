@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { Logo } from "@/components/logo";
 import Link from "next/link";
@@ -20,13 +20,7 @@ import {
 import { Menu } from "lucide-react";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { ComponentProps } from "react";
-import checkAuthStatus from "@/utility/auth";
-
-
-const data = await checkAuthStatus()
-const { user } = data
-
-console.log(user);
+import { useUser } from "@/providers/userProvider";
 
 const PublicNavbar = (props: ComponentProps<typeof NavigationMenu>) => {
   const navItems = [
@@ -36,8 +30,17 @@ const PublicNavbar = (props: ComponentProps<typeof NavigationMenu>) => {
     { name: "Diagnostics", href: "/diagnostics", role: "PUBLIC" },
     { name: "NGOs", href: "/ngo", role: "PUBLIC" },
   ];
-  console.log(user);
 
+  const { user } = useUser();
+console.log(user);
+
+  if (user?.role) {
+    navItems.push({
+      name: "Dashboard",
+      href: `/${user?.role.toLowerCase()}/dashboard`,
+      role: user?.role,
+    });
+  }
   return (
     <nav className="h-16 bg-background border-b">
       <div className="h-full flex items-center justify-between max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -73,7 +76,10 @@ const PublicNavbar = (props: ComponentProps<typeof NavigationMenu>) => {
             </Link>
           )}
           {user?.email && (
-            <Button variant={"destructive"} className="cursor-pointer">
+            <Button
+              variant={"destructive"}
+              className="hidden md:inline-flex cursor-pointer"
+            >
               LogOut
             </Button>
           )}
@@ -115,12 +121,22 @@ const PublicNavbar = (props: ComponentProps<typeof NavigationMenu>) => {
 
                 {/* Footer inside sheet */}
                 <SheetFooter className="mt-auto border-t pt-4">
-                  <Link
-                    href={"/login"}
-                    className="w-full py-2 font-semibold text-center rounded-xl cursor-pointer bg-blue-500 text-white hover:bg-blue-400"
-                  >
-                    Log In
-                  </Link>
+                  {!user?.email && (
+                    <Link
+                      href={"/login"}
+                      className="w-full py-2 font-semibold text-center rounded-xl cursor-pointer bg-blue-500 text-white hover:bg-blue-400"
+                    >
+                      Log In
+                    </Link>
+                  )}
+                  {user?.email && (
+                    <Button
+                      variant={"destructive"}
+                      className="hidden md:inline-flex cursor-pointer"
+                    >
+                      LogOut
+                    </Button>
+                  )}
                 </SheetFooter>
               </SheetContent>
             </Sheet>

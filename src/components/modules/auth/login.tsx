@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import checkAuthStatus from "@/utility/auth";
 import loginUser from "@/utility/loginuser";
+import { useUser } from "@/providers/userProvider";
 
 type LoginFormInputs = {
   email: string;
@@ -23,6 +24,7 @@ export default function Login() {
     formState: { errors },
   } = useForm<LoginFormInputs>();
   const [showPassword, setShowPassword] = useState(false);
+  const {user, setUser} = useUser()
 
   const router = useRouter();
 
@@ -35,25 +37,28 @@ export default function Login() {
       const res = await loginUser(payload);
       // console.log("[In login.tsx] res in login file", res);
       console.log("[In login.tsx] res.success", res.success);
+      console.log(res);
 
       if (res.success) {
         const authStatus = await checkAuthStatus();
+        setUser(authStatus.user)
         console.log("[In login.tsx] authStatus", authStatus);
-
+        // if (condition) {
+        // }
         if (authStatus.isAuthenticated && authStatus.user) {
           const { role } = authStatus.user;
           switch (role) {
             case "ADMIN":
               toast.success("Admin successfully logged in");
-              router.push("/dashboard");
+              router.push(`/${role.toLowerCase()}/dashboard`);
               break;
             case "PATIENT":
               toast.success("Patient successfully logged in");
-              router.push("/dashboard");
+              router.push(`/${role.toLowerCase()}/dashboard`);
               break;
             case "DOCTOR":
               toast.success("Doctor successfully logged in");
-              router.push("/dashboard");
+              router.push(`/${role.toLowerCase()}/dashboard`);
               break;
 
             default:
@@ -62,11 +67,13 @@ export default function Login() {
           }
         }
       } else {
-        toast.error("Somthing went wrong! Login failed");
+        toast.error(res.message || "Somthing went wrong! Login failed");
       }
-      
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
+      console.log(error);
+
       toast.error(error.message || "Login failed");
       console.error(
         error.message ||

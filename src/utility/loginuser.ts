@@ -5,28 +5,21 @@ type LoginFormInputs = {
 
 const loginUser = async (payload: LoginFormInputs) => {
   try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/auth/login`,{
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-        credentials: "include",
-      }
-    );
-
-
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/auth/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+      credentials: "include",
+    });
 
     const data = await res.json();
-    if (data.success) {
-      console.log("[In login.tsx] data", data);
-      return data
-    }
-    return null
+    // console.log("[In login.tsx] data", data);
+    return data;
   } catch (error) {
     console.error(error);
   }
-}
+};
 
-export default loginUser
+export default loginUser;
