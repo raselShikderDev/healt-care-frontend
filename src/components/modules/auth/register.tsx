@@ -35,7 +35,7 @@ export default function SignUp() {
         onSubmit={handleSubmit(onSubmit)}
         className="w-full max-w-md space-y-6 rounded-lg bg-white p-8 shadow-md"
       >
-        <h2 className="text-2xl font-bold text-center">Create your account</h2>
+        {/* <h2 className="text-2xl font-bold text-center">Create your account</h2> */}
 
         {/* Name */}
         <div>
