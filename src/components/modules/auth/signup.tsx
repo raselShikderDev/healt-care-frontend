@@ -21,6 +21,20 @@ export default function SignUp() {
   const [state, formActoin, isPending] = useActionState(signupPatient, null);
   console.log(state);
 
+  const getFeildError = (feildName: string) => {
+    if (state && state.errors) {
+      const error = state?.errors.find((err: any) => err.feild === feildName)
+      if (error) {
+        return error?.message
+      } else {
+        return null
+      }
+
+    } else {
+      return null
+    }
+  }
+
   return (
     <form action={formActoin} className="space-y-5">
       <FieldGroup className="space-y-4">
@@ -31,8 +45,10 @@ export default function SignUp() {
             name="name"
             type="text"
             placeholder="John Doe"
-            required
           />
+          {
+            getFeildError("name") && (<FieldDescription className="text-red-600">error {getFeildError("name")}</FieldDescription>)
+          }
         </Field>
 
         <Field>
@@ -42,8 +58,10 @@ export default function SignUp() {
             name="email"
             type="email"
             placeholder="m@example.com"
-            required
           />
+          {
+            getFeildError("email") && (<FieldDescription className="text-red-600">error {getFeildError("email")}</FieldDescription>)
+          }
         </Field>
 
         {/* Password Field */}
@@ -56,7 +74,6 @@ export default function SignUp() {
               name="password"
               type={showPassword ? "text" : "password"}
               placeholder="Password"
-              required
               className="pl-10"
             />
             <Button
@@ -68,9 +85,9 @@ export default function SignUp() {
               {showPassword ? <EyeOff /> : <Eye />}
             </Button>
           </div>
-          <FieldDescription>
-            Must be at least 8 characters long.
-          </FieldDescription>
+          {
+            getFeildError("password") && (<FieldDescription className="text-red-600">error {getFeildError("password")}</FieldDescription>)
+          }
         </Field>
 
         {/* Confirm Password Field */}
@@ -83,7 +100,6 @@ export default function SignUp() {
               name="confirmPassword"
               type={confirmShowPassword ? "text" : "password"}
               placeholder="Confirm Password"
-              required
               className="pl-10"
             />
             <Button
@@ -95,6 +111,9 @@ export default function SignUp() {
               {confirmShowPassword ? <EyeOff /> : <Eye />}
             </Button>
           </div>
+          {
+            getFeildError("confirmPassword") && (<FieldDescription className="text-red-600">error {getFeildError("confirmPassword")}</FieldDescription>)
+          }
         </Field>
 
         <FieldGroup>
