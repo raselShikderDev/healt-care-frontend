@@ -34,7 +34,7 @@ const PublicNavbar = (props: ComponentProps<typeof NavigationMenu>) => {
   ];
 
   const { user } = useUser();
-  console.log(user);
+  // console.log(user);
 
   if (user?.role) {
     navItems.push({
