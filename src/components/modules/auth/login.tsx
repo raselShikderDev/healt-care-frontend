@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { logInUser } from "@/services/auth/logInUser";
+import { FieldDescription } from "@/components/ui/field";
 
 export type LoginFormInputs = {
   email: string;
@@ -15,7 +16,16 @@ export type LoginFormInputs = {
 export default function Login() {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [state, formActoin, isPending] = useActionState(logInUser, null);
-  console.log(state);
+
+  const getFeildError = (feildName: string) => {
+    if (state && state.errors) {
+      const error = state?.errors.find((err: any) => err.feild === feildName)
+      return error?.message
+    } else {
+      return null
+    }
+  }
+
 
   // const router = useRouter();
 
@@ -93,6 +103,9 @@ export default function Login() {
               className={`mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 outline-none `}
               placeholder="you@example.com"
             />
+            {
+              getFeildError("email") && (<FieldDescription className="text-red-600">error {getFeildError("email")}</FieldDescription>)
+            }
           </div>
 
           {/* Password */}
@@ -124,6 +137,9 @@ export default function Login() {
                 )}
               </Button>
             </div>
+            {
+              getFeildError("password") && (<FieldDescription className="text-red-600">{getFeildError("password")}</FieldDescription>)
+            }
           </div>
 
           {/* Remember me & forgot password */}
