@@ -19,6 +19,7 @@ export default function Login() {
 
   const getFeildError = (feildName: string) => {
     if (state && state.errors) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const error = state?.errors.find((err: any) => err.feild === feildName)
       return error?.message
     } else {
