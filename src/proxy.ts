@@ -1,4 +1,6 @@
+import { cookies } from "next/headers";
 import { NextResponse, NextRequest } from "next/server";
+import jwt, { JwtPayload } from "jsonwebtoken";
 
 type UserRole = "PATIENT" | "DOCTOR" | "ADMIN";
 
@@ -15,7 +17,7 @@ const commonProtectedRoutes: RouteConfig = {
 };
 
 const doctorPatientsroutes: RouteConfig = {
-  patterns: [/^\doctor/], // Routes stating with /doctor/*, /assitence
+  patterns: [/^\/doctor/], // Routes stating with /doctor/*, /assitence
   exact: [], // "/assistence"
 };
 
@@ -33,16 +35,118 @@ const isAuthRoute = (pathName: string) => {
   return authRoutes.some((route) => route === pathName);
 };
 
-const isROuteMatches = (pathName: string, routes: RouteConfig): boolean => {
+const isRouteMatches = (pathName: string, routes: RouteConfig): boolean => {
   if (routes.exact.includes(pathName)) {
     return true;
   }
   return routes.patterns.some((pattern: RegExp) => pattern.test(pathName));
 };
 
+const getRouteOwner = (
+  pathName: string
+): "ADMIN" | "DOCTOR" | "PATIENT" | "COMMON" | null => {
+  if (isRouteMatches(pathName, adminProtectedRoutes)) {
+    return "ADMIN";
+  }
+  if (isRouteMatches(pathName, patientProtectedRoutes)) {
+    return "PATIENT";
+  }
+  if (isRouteMatches(pathName, doctorPatientsroutes)) {
+    return "DOCTOR";
+  }
+  if (isRouteMatches(pathName, commonProtectedRoutes)) {
+    return "COMMON";
+  }
+  return null;
+};
+
+const getDefaultDashboard = (role: UserRole): string => {
+  if (role === "ADMIN") {
+    return "/admin/dashboard";
+  }
+  if (role === "DOCTOR") {
+    return "/doctor/dashboard";
+  }
+  if (role === "PATIENT") {
+    return "/dashboard";
+  }
+  return "/";
+};
+
 // This function can be marked `async` if using `await` inside
-export function proxy(request: NextRequest) {
-  console.log(request.nextUrl.pathname);
+export async function proxy(request: NextRequest) {
+  const pathname = request.nextUrl.pathname;
+  const cookieStore = await cookies();
+
+  const accessToken = request.cookies.get("accessToken")?.value || null;
+  // console.log({ accessToken });
+
+  let userRole: UserRole | null = null;
+  if (accessToken) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const verifiedToken: JwtPayload | any = jwt.verify(
+      accessToken,
+      process.env.JWT_ACCESS_SECRET as string
+    );
+
+    // console.log({ verifiedToken });
+
+    if (typeof verifiedToken === "string") {
+      NextResponse.redirect(new URL("/login", request.url));
+      cookieStore.delete("accessToken");
+      cookieStore.delete("refreshToken");
+    }
+    userRole = verifiedToken.role;
+  }
+  // console.log(userRole);
+  console.log({ pathname });
+
+  const routeOwner = getRouteOwner(pathname);
+  console.log({ routeOwner });
+
+  const isAuth = isAuthRoute(pathname);
+  console.log({ isAuth });
+
+  // Rule 1: user is logged in but trying to access auth routes => redirecting to default dashboard
+  if (accessToken && isAuth) {
+    return NextResponse.redirect(
+      new URL(getDefaultDashboard(userRole as UserRole), request.url)
+    );
+  }
+
+  // Rule 2: If user trying to acces public route
+  if (userRole === null) {
+    return NextResponse.next();
+  }
+
+  // Rule 1 & 2 is open for public routes
+  if (!accessToken) {
+    const loginUrl = new URL("/login", request.url);
+    loginUrl.searchParams.set("redirect", pathname);
+    return NextResponse.redirect(loginUrl);
+  }
+
+  // Rule 3: if use trying to acces common protected routes
+  if (routeOwner === "COMMON") {
+    return NextResponse.next();
+  }
+
+  // Rule 4: if user try to acces role based routes
+
+  if (
+    routeOwner === "ADMIN" ||
+    routeOwner === "DOCTOR" ||
+    routeOwner === "PATIENT"
+  ) {
+    console.log({ "userRole !== routeOwner": userRole !== routeOwner });
+
+    if (userRole !== routeOwner) {
+      return NextResponse.redirect(
+        new URL(getDefaultDashboard(userRole as UserRole), request.url)
+      );
+    }
+    return NextResponse.next();
+  }
 
   return NextResponse.next();
 }
@@ -60,206 +164,3 @@ export const config = {
     "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.well-known).*)",
   ],
 };
-
-// import { jwtDecode } from "jwt-decode";
-// import { IUser } from "./types/types";
-
-// const roleBasedRoutes = {
-//   DOCTOR: ["/doctor/dashboard"],
-//   ADMIN: ["/admin/dashboard"],
-//   PATIENT: ["/patient/dashboard",
-//     "/patient/appointments",
-//     "/patient/medical-records",
-//   ],
-// };
-
-// export async function proxy(request: NextRequest) {
-//   const accessToken = request.cookies.get("accessToken")?.value;
-//   const refreshToken = request.cookies.get("refreshToken")?.value;
-
-//   const { pathname } = request.nextUrl;
-
-//   if (!accessToken && !refreshToken && !authRoutes.includes(pathname)) {
-//     return NextResponse.redirect(
-//       new URL(`/login?redirect=${pathname}`, request.url)
-//     );
-//   }
-
-//   let user: IUser | null = null;
-
-//   if (accessToken) {
-//     try {
-//       user = jwtDecode(accessToken);
-//     } catch (error) {
-//       console.log(error);
-//       return NextResponse.redirect(
-//         new URL(`/login?redirect=${pathname}`, request.url)
-//       );
-//     }
-//   }
-
-//   if (!user && refreshToken) {
-//     try {
-//       const res = await fetch(
-//         `${process.env.NEXT_PUBLIC_BASE_URL}/auth/refresh-token`,
-//         {
-//           method: "GET",
-//           headers: {
-//             "Content-Type": "application/json",
-//           },
-//           credentials: "include",
-//         }
-//       );
-//       const data = await res.json();
-
-//       if (data.success) {
-//         const newAccessToken = request.cookies.get("accessToken")?.value;
-//         user = jwtDecode(newAccessToken as string);
-//         return NextResponse.next();
-//       } else {
-//         const response = NextResponse.redirect(
-//           new URL(`/login?redirect=${pathname}`, request.url)
-//         );
-//         response.cookies.delete("refreshToken");
-//         response.cookies.delete("accessToken");
-//         return response;
-//       }
-//     } catch (error) {
-//       console.error(error);
-//       const response = NextResponse.redirect(
-//         new URL(`login?redirect=${pathname}`, request.url)
-//       );
-//       response.cookies.delete("refreshToken");
-//       response.cookies.delete("accessToken");
-//       return response;
-//     }
-//   }
-
-//   if (user) {
-//     const allowedroutes = user ? roleBasedRoutes[user.role] : [];
-
-//     if (
-//       allowedroutes &&
-//       allowedroutes.some((path) => pathname.startsWith(path))
-//     ) {
-//       return NextResponse.next();
-//     } else {
-//       return NextResponse.redirect(new URL("/", request.url));
-//     }
-//   }
-
-//   if (user && authRoutes.includes(pathname)) {
-//     return NextResponse.redirect(new URL("/", request.url));
-//   }
-
-//   return NextResponse.next();
-// }
-
-// export const config = {
-//   matcher: ["/admin/dashboard", "/login", "/signup", "/forget-password"],
-// };
-
-// // import { NextResponse } from "next/server";
-// // import type { NextRequest } from "next/server";
-// // import { jwtDecode } from "jwt-decode";
-
-// // interface userInterface {
-// //   id: number;
-// //   email: string;
-// //   role: "ADMIN" | "DOCTOR" | "PATIENT";
-// //   exp: number;
-// //   ia: number;
-// // }
-
-// // const roleBasedRoutes = {
-// //   ADMIN: ["/admin/dashboard",],
-// //   DOCTOR: ["/doctor/dashboard"],
-// //   PATIENT: [
-// //     "/patient/dashboard",
-// //     "/patient/appointments",
-// //     "/patient/medical-records",
-// //   ],
-// // };
-
-// // const authRoutes = ["/login", "/register", "/forgot-password"];
-
-// // export async function proxy(request: NextRequest) {
-// //   const accessToken = request.cookies.get("accessToken")?.value;
-// //   const refreshToken = request.cookies.get("refreshToken")?.value;
-
-// //   const { pathname } = request.nextUrl;
-
-// //   if (!accessToken && !refreshToken && !authRoutes.includes(pathname)) {
-// //     return NextResponse.redirect(
-// //       new URL(`/login?redirect=${pathname}`, request.url)
-// //     );
-// //   }
-
-// //   let user: userInterface | null = null;
-
-// //   if (accessToken) {
-// //     try {
-// //       user = jwtDecode(accessToken); // {id: string, email: string, role: "ADMIN"| "DOCTOR" | "PATIENT", exp: number, iat: number}
-// //     } catch (err) {
-// //       console.log("Error decoding access token:", err);
-// //       return NextResponse.redirect(
-// //         new URL(`/login?redirect=${pathname}`, request.url)
-// //       );
-// //     }
-// //   }
-
-// //   if (!user && refreshToken) {
-// //     try {
-// //       const refreshRes = await fetch(
-// //         `${process.env.NEXT_PUBLIC_API_URL}/auth/refresh-token`,
-// //         {
-// //           method: "POST",
-// //           headers: {
-// //             "Content-Type": "application/json",
-// //           },
-// //           body: JSON.stringify({ refreshToken }),
-// //         }
-// //       );
-// //       if (refreshRes.ok) {
-// //         const newAccessToken = request.cookies.get("accessToken")?.value;
-// //         user = jwtDecode(newAccessToken!);
-// //         return NextResponse.next();
-// //       } else {
-// //         const response = NextResponse.redirect(
-// //           new URL(`/login?redirect=${pathname}`, request.url)
-// //         );
-// //         response.cookies.delete("accessToken");
-// //         response.cookies.delete("refreshToken");
-// //         return response;
-// //       }
-// //     } catch (err) {
-// //       console.log("Error refreshing token:", err);
-// //       const response = NextResponse.redirect(
-// //         new URL(`/login?redirect=${pathname}`, request.url)
-// //       );
-// //       response.cookies.delete("accessToken");
-// //       response.cookies.delete("refreshToken");
-// //       return response;
-// //     }
-// //   }
-
-// //    if(user){
-// //     const allowedRoutes = user ? roleBasedRoutes[user.role] : [];
-// //     if(allowedRoutes && allowedRoutes.some((r)=>pathname.startsWith(r))){
-// //         return NextResponse.next();
-// //     }else{
-// //         return NextResponse.redirect(new URL(`/unauthorized`, request.url));
-// //     }
-// //    }
-
-// //    if(user && authRoutes.includes(pathname)){
-// //     return NextResponse.redirect(new URL(`/`));
-// //    }
-
-// //   return NextResponse.next();
-// // }
-
-// // // See "Matching Paths" below to learn more
-// // export const config = {
-// //   matcher: ["/admin/dashboard/:path*", "/login", "/register", "/forgot-password"],
-// // };
