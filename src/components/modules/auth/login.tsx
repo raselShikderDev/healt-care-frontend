@@ -1,99 +1,95 @@
 "use client";
 
-import { useForm } from "react-hook-form";
-import { useState } from "react";
+import { useActionState, useState } from "react";
 import { Eye, EyeOff, Loader2, LogIn } from "lucide-react";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
-import { toast } from "react-toastify";
-import checkAuthStatus from "@/utility/auth";
-import loginUser from "@/utility/loginuser";
-import { useUser } from "@/providers/userProvider";
+import { logInUser } from "@/services/auth/logInUser";
+import { FieldDescription } from "@/components/ui/field";
 
-type LoginFormInputs = {
+export type LoginFormInputs = {
   email: string;
   password: string;
 };
 
 export default function Login() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<LoginFormInputs>();
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { user, setUser } = useUser();
+  const [state, formActoin, isPending] = useActionState(logInUser, null);
 
-  const router = useRouter();
-
-  const onSubmit = async (data: LoginFormInputs) => {
-    const payload = {
-      email: data.email,
-      password: data.password,
-    };
-    try {
-      setIsLoading(true);
-      const res = await loginUser(payload);
-      // console.log("[In login.tsx] res in login file", res);
-      console.log("[In login.tsx] res.success", res.success);
-      console.log(res);
-
-      if (res.success) {
-        const authStatus = await checkAuthStatus();
-        setUser(authStatus.user);
-        console.log("[In login.tsx] authStatus", authStatus);
-        // if (condition) {
-        // }
-        if (authStatus.isAuthenticated && authStatus.user) {
-          const { role } = authStatus.user;
-          switch (role) {
-            case "ADMIN":
-              toast.success("Admin successfully logged in");
-              router.push(`/${role.toLowerCase()}/dashboard`);
-              break;
-            case "PATIENT":
-              toast.success("Patient successfully logged in");
-              router.push(`/${role.toLowerCase()}/dashboard`);
-              break;
-            case "DOCTOR":
-              toast.success("Doctor successfully logged in");
-              router.push(`/${role.toLowerCase()}/dashboard`);
-              break;
-
-            default:
-              router.push("/");
-              break;
-          }
-        }
-      } else {
-        toast.error(res.message || "Somthing went wrong! Login failed");
-      }
-
+  const getFeildError = (feildName: string) => {
+    if (state && state.errors) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      console.log(error);
-
-      toast.error(error.message || "Login failed");
-      console.error(
-        error.message ||
-          "Login failed. Please check your credentials and try again."
-      );
-    } finally {
-      setIsLoading(false);
+      const error = state?.errors.find((err: any) => err.feild === feildName)
+      return error?.message
+    } else {
+      return null
     }
-  };
-  console.log({ user: user });
+  }
+
+
+  // const router = useRouter();
+
+  // const onSubmit = async (data: LoginFormInputs) => {
+  //   const payload = {
+  //     email: data.email,
+  //     password: data.password,
+  //   };
+  //   try {
+  //     const res = await loginUser(payload);
+  //     // console.log("[In login.tsx] res in login file", res);
+  //     console.log("[In login.tsx] res.success", res.success);
+  //     console.log(res);
+
+  //     if (res.success) {
+  //       const authStatus = await checkAuthStatus();
+  //       console.log("[In login.tsx] authStatus", authStatus);
+  //       // if (condition) {
+  //       // }
+  //       if (authStatus.isAuthenticated && authStatus.user) {
+  //         const { role } = authStatus.user;
+  //         switch (role) {
+  //           case "ADMIN":
+  //             toast.success("Admin successfully logged in");
+  //             router.push(`/${role.toLowerCase()}/dashboard`);
+  //             break;
+  //           case "PATIENT":
+  //             toast.success("Patient successfully logged in");
+  //             router.push(`/${role.toLowerCase()}/dashboard`);
+  //             break;
+  //           case "DOCTOR":
+  //             toast.success("Doctor successfully logged in");
+  //             router.push(`/${role.toLowerCase()}/dashboard`);
+  //             break;
+
+  //           default:
+  //             router.push("/");
+  //             break;
+  //         }
+  //       }
+  //     } else {
+  //       toast.error(res.message || "Somthing went wrong! Login failed");
+  //     }
+
+  //     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  //   } catch (error: any) {
+  //     console.log(error);
+
+  //     toast.error(error.message || "Login failed");
+  //     console.error(
+  //       error.message ||
+  //         "Login failed. Please check your credentials and try again."
+  //     );
+  //   }
+  // };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="max-w-md w-full bg-white p-8 rounded-2xl shadow-lg">
         <h2 className="text-2xl font-bold text-gray-900 text-center mb-6">
-          {isLoading ? "Logging in" : "Login to Your Account"}
+          {isPending ? "Logging in" : "Login to Your Account"}
         </h2>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form action={formActoin} className="space-y-4">
           {/* Email */}
           <div>
             <label
@@ -104,17 +100,13 @@ export default function Login() {
             </label>
             <Input
               id="email"
-              {...register("email", { required: "Email is required" })}
-              className={`mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 outline-none ${
-                errors.email ? "border-red-500" : "border-gray-300"
-              }`}
+              name="email"
+              className={`mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 outline-none `}
               placeholder="you@example.com"
             />
-            {errors.email && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.email.message}
-              </p>
-            )}
+            {
+              getFeildError("email") && (<FieldDescription className="text-red-600">error {getFeildError("email")}</FieldDescription>)
+            }
           </div>
 
           {/* Password */}
@@ -129,10 +121,8 @@ export default function Login() {
               <Input
                 type={showPassword ? "text" : "password"}
                 id="password"
-                {...register("password", { required: "Password is required" })}
-                className={`block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 outline-none pr-10 ${
-                  errors.password ? "border-red-500" : "border-gray-300"
-                }`}
+                name="password"
+                className={`block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 outline-none pr-10 `}
                 placeholder="Enter your password"
               />
               <Button
@@ -148,11 +138,9 @@ export default function Login() {
                 )}
               </Button>
             </div>
-            {errors.password && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.password.message}
-              </p>
-            )}
+            {
+              getFeildError("password") && (<FieldDescription className="text-red-600">{getFeildError("password")}</FieldDescription>)
+            }
           </div>
 
           {/* Remember me & forgot password */}
@@ -166,14 +154,14 @@ export default function Login() {
           <Button
             type="submit"
             className="w-full cursor-pointer py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
-            disabled={isLoading}
+            disabled={isPending}
           >
-            {isLoading ? (
+            {isPending ? (
               <Loader2 className="w-5 h-5 animate-spin" />
             ) : (
               <LogIn className="w-5 h-5" />
             )}
-            {!isLoading && "LogIn"}
+            {!isPending && "LogIn"}
           </Button>
         </form>
 

@@ -34,9 +34,9 @@ const PublicNavbar = (props: ComponentProps<typeof NavigationMenu>) => {
   ];
 
   const { user } = useUser();
-  console.log(user);
+  // console.log(user);
 
-  if (user?.role) {
+  if ( user && user?.role) {
     navItems.push({
       name: "Dashboard",
       href: `/${user?.role.toLowerCase()}/dashboard`,
