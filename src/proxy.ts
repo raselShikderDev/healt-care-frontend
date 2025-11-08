@@ -1,43 +1,52 @@
-import { NextResponse, NextRequest } from 'next/server'
+import { NextResponse, NextRequest } from "next/server";
 
+type UserRole = "PATIENT" | "DOCTOR" | "ADMIN";
 
-type UserRole = "PATIENT" | "DOCTOR" | "ADMIN"
-
-type RouteConfig ={
-  exact:string[]
-  patterns:RegExp[]
-}
+type RouteConfig = {
+  exact: string[];
+  patterns: RegExp[];
+};
 
 const authRoutes = ["/login", "/signup", "/forget-password", "/reset-password"];
 
-const commonProtectedRoutes:RouteConfig ={
-  exact:["/my-profile", "/settings"],
-  patterns:[], // [/password/change-password, /password/reser-password => /password/*]
-}
+const commonProtectedRoutes: RouteConfig = {
+  exact: ["/my-profile", "/settings"],
+  patterns: [], // [/password/change-password, /password/reser-password => /password/*]
+};
 
-const doctorPatientsroutes:RouteConfig = {
-  patterns:[/^\doctor/], // Routes stating with /doctor/*, /assitence
-  exact:[] // "/assistence"
-}
+const doctorPatientsroutes: RouteConfig = {
+  patterns: [/^\doctor/], // Routes stating with /doctor/*, /assitence
+  exact: [], // "/assistence"
+};
 
-const adminProtectedRoutes:RouteConfig={
-  patterns:[/^\/admin/],
-  exact:[]
-}
+const adminProtectedRoutes: RouteConfig = {
+  patterns: [/^\/admin/],
+  exact: [],
+};
 
-const patientProtectedRoutes:RouteConfig={
-  patterns:[/^\/dashboard/],
-  exact:[]
-}
+const patientProtectedRoutes: RouteConfig = {
+  patterns: [/^\/dashboard/],
+  exact: [],
+};
 
- 
+const isAuthRoute = (pathName: string) => {
+  return authRoutes.some((route) => route === pathName);
+};
+
+const isROuteMatches = (pathName: string, routes: RouteConfig): boolean => {
+  if (routes.exact.includes(pathName)) {
+    return true;
+  }
+  return routes.patterns.some((pattern: RegExp) => pattern.test(pathName));
+};
+
 // This function can be marked `async` if using `await` inside
 export function proxy(request: NextRequest) {
   console.log(request.nextUrl.pathname);
-  
-  return NextResponse.next()
+
+  return NextResponse.next();
 }
- 
+
 export const config = {
   matcher: [
     /*
@@ -47,22 +56,13 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico, sitemap.xml, robots.txt (metadata files)
      */
-   
-    '/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.well-known).*)',
+
+    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.well-known).*)",
   ],
-}
+};
 
-
-
-
-
-
-
-// import { NextResponse, NextRequest } from "next/server";
 // import { jwtDecode } from "jwt-decode";
 // import { IUser } from "./types/types";
-
-
 
 // const roleBasedRoutes = {
 //   DOCTOR: ["/doctor/dashboard"],
@@ -72,8 +72,6 @@ export const config = {
 //     "/patient/medical-records",
 //   ],
 // };
-
-
 
 // export async function proxy(request: NextRequest) {
 //   const accessToken = request.cookies.get("accessToken")?.value;
@@ -91,7 +89,7 @@ export const config = {
 
 //   if (accessToken) {
 //     try {
-//       user = jwtDecode(accessToken); 
+//       user = jwtDecode(accessToken);
 //     } catch (error) {
 //       console.log(error);
 //       return NextResponse.redirect(
@@ -160,7 +158,6 @@ export const config = {
 // export const config = {
 //   matcher: ["/admin/dashboard", "/login", "/signup", "/forget-password"],
 // };
-
 
 // // import { NextResponse } from "next/server";
 // // import type { NextRequest } from "next/server";
@@ -246,7 +243,6 @@ export const config = {
 // //     }
 // //   }
 
-
 // //    if(user){
 // //     const allowedRoutes = user ? roleBasedRoutes[user.role] : [];
 // //     if(allowedRoutes && allowedRoutes.some((r)=>pathname.startsWith(r))){
@@ -259,8 +255,6 @@ export const config = {
 // //    if(user && authRoutes.includes(pathname)){
 // //     return NextResponse.redirect(new URL(`/`));
 // //    }
-   
-
 
 // //   return NextResponse.next();
 // // }
