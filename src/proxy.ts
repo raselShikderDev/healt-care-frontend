@@ -1,12 +1,11 @@
-import { cookies } from "next/headers";
 import { NextResponse, NextRequest } from "next/server";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { getDefaultDashboard, getRouteOwner, isAuthRoute, UserRole } from "./lib/authUtils";
+import { deleteCookie } from "./lib/tokenHandler";
 
 
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
-  const cookieStore = await cookies();
 
   const accessToken = request.cookies.get("accessToken")?.value || null;
 
@@ -18,11 +17,10 @@ export async function proxy(request: NextRequest) {
       process.env.JWT_ACCESS_SECRET as string
     );
 
-    // console.log({ verifiedToken });
 
     if (typeof verifiedToken === "string") {
-      cookieStore.delete("accessToken");
-      cookieStore.delete("refreshToken");
+      await deleteCookie("accessToken");
+      await deleteCookie("refreshToken");
       return NextResponse.redirect(new URL("/login", request.url));
     }
     userRole = verifiedToken.role;

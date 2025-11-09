@@ -3,7 +3,6 @@
 
 import z from "zod";
 import { parse } from "cookie";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import {
@@ -11,6 +10,7 @@ import {
   isValidRedirectRoute,
   UserRole,
 } from "@/lib/authUtils";
+import { setCookie } from "@/lib/tokenHandler";
 
 const logInUserSchema = z.object({
   email: z.email({ error: "Email is required" }),
@@ -82,9 +82,8 @@ export const logInUser = async (_currentState: any, formData: any) => {
       throw new Error("No refreshToken found");
     }
 
-    const cookieStore = await cookies();
 
-    cookieStore.set("accessToken", accessTokenObject.accessToken, {
+    await setCookie("accessToken", accessTokenObject.accessToken, {
       httpOnly: true,
       secure: true,
       path: accessTokenObject.path || "/",
@@ -92,7 +91,7 @@ export const logInUser = async (_currentState: any, formData: any) => {
       sameSite: accessTokenObject["sameSite"] || "none",
       // expires:accessTokenObject.Expires,
     });
-    cookieStore.set("refreshToken", refreshTokenObject.refreshToken, {
+    await setCookie("refreshToken", refreshTokenObject.refreshToken, {
       httpOnly: true,
       secure: true,
       path: refreshTokenObject.path || "/",
