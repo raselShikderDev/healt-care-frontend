@@ -1,5 +1,3 @@
-"use client";
-
 import { Logo } from "@/components/logo";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -16,15 +14,14 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
-import { Loader2, LogOut, Menu } from "lucide-react";
-import { ComponentProps, useState } from "react";
-import { useUser } from "@/providers/userProvider";
-import { logOutUser } from "@/utility/logoutUser";
+// import { Loader2, LogOut, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
+import { ComponentProps } from "react";
+import { getCookie } from "@/lib/tokenHandler";
+import LogoutButton from "./logoutButton";
+import LogoutButtonMobile from "./logoutButtonMobile";
 
-const PublicNavbar = (props: ComponentProps<typeof NavigationMenu>) => {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { setUser } = useUser();
-
+const PublicNavbar = async (props: ComponentProps<typeof NavigationMenu>) => {
   const navItems = [
     { name: "Home", href: "/", role: "PUBLIC" },
     { name: "Consultation", href: "/consultations", role: "PUBLIC" },
@@ -33,28 +30,16 @@ const PublicNavbar = (props: ComponentProps<typeof NavigationMenu>) => {
     { name: "NGOs", href: "/ngo", role: "PUBLIC" },
   ];
 
-  const { user } = useUser();
-  // console.log(user);
+  const accessToken = await getCookie("accessToken");
 
-  if ( user && user?.role) {
-    navItems.push({
-      name: "Dashboard",
-      href: `/${user?.role.toLowerCase()}/dashboard`,
-      role: user?.role,
-    });
-  }
+  // if ( user && user?.role) {
+  //   navItems.push({
+  //     name: "Dashboard",
+  //     href: `/${user?.role.toLowerCase()}/dashboard`,
+  //     role: user?.role,
+  //   });
+  // }
 
-  const handleLogout = async () => {
-    try {
-      setIsLoading(true);
-      await logOutUser();
-      setUser(null);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
   return (
     <nav className="h-16 bg-background border-b">
       <div className="h-full flex items-center justify-between max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -81,28 +66,15 @@ const PublicNavbar = (props: ComponentProps<typeof NavigationMenu>) => {
 
         <div className="flex items-center gap-3">
           {/* Desktop login button */}
-          {!user?.email && (
+          {accessToken ? (
+            <LogoutButton />
+          ) : (
             <Link
               href="/login"
               className="hidden md:inline-flex cursor-pointer text-white bg-blue-500 rounded px-5 py-2 font-semibold hover:bg-blue-400 active:bg-transparent active:text-blue-500 active:border-blue-500 active:border active:font-semibold"
             >
               Log In
             </Link>
-          )}
-          {user?.email && (
-            <Button
-              variant={"destructive"}
-              className="hidden md:inline-flex cursor-pointer"
-              disabled={isLoading}
-              onClick={handleLogout}
-            >
-              {isLoading ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
-              ) : (
-                <LogOut className="w-5 h-5" />
-              )}
-              {!isLoading && "logout"}
-            </Button>
           )}
 
           {/* Mobile menu */}
@@ -139,28 +111,15 @@ const PublicNavbar = (props: ComponentProps<typeof NavigationMenu>) => {
 
                 {/* Footer inside sheet */}
                 <SheetFooter className="mt-auto border-t pt-4">
-                  {!user?.role && (
+                  {accessToken ? (
+                    <LogoutButtonMobile />
+                  ) : (
                     <Link
                       href={"/login"}
                       className="w-full py-2 font-semibold text-center rounded-xl cursor-pointer bg-blue-500 text-white hover:bg-blue-400"
                     >
                       Log In
                     </Link>
-                  )}
-                  {user?.role && (
-                    <Button
-                      variant={"destructive"}
-                      className="inline-flex cursor-pointer"
-                      disabled={isLoading}
-                      onClick={handleLogout}
-                    >
-                      {isLoading ? (
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                      ) : (
-                        <LogOut className="w-5 h-5" />
-                      )}
-                      {!isLoading && "logout"}
-                    </Button>
                   )}
                 </SheetFooter>
               </SheetContent>
