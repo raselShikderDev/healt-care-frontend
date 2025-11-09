@@ -121,9 +121,10 @@ export const logInUser = async (_currentState: any, formData: any) => {
       } else {
         redirect(getDefaultDashboard(userRole as UserRole));
       }
+    } else {
+      redirect(getDefaultDashboard(userRole as UserRole));
     }
 
-    return data;
   } catch (error: any) {
     if (error?.digest?.startsWith("NEXT_REDIRECT")) {
       throw error;

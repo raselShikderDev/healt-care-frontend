@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { Input } from "@/components/ui/input";
@@ -23,32 +24,30 @@ export default function SignUp() {
 
   const getFeildError = (feildName: string) => {
     if (state && state.errors) {
-      const error = state?.errors.find((err: any) => err.feild === feildName)
+      const error = state?.errors.find((err: any) => err.feild === feildName);
       if (error) {
-        return error?.message
-      } else {
-        return null
-      }
+        console.log(error?.message);
 
+        return error?.message;
+      } else {
+        return null;
+      }
     } else {
-      return null
+      return null;
     }
-  }
+  };
 
   return (
     <form action={formActoin} className="space-y-5">
       <FieldGroup className="space-y-4">
         <Field>
           <FieldLabel htmlFor="name">Full Name</FieldLabel>
-          <Input
-            id="name"
-            name="name"
-            type="text"
-            placeholder="John Doe"
-          />
-          {
-            getFeildError("name") && (<FieldDescription className="text-red-600">error {getFeildError("name")}</FieldDescription>)
-          }
+          <Input id="name" name="name" type="text" placeholder="John Doe" />
+          {getFeildError("name") && (
+            <FieldDescription className="text-red-600">
+              error {getFeildError("name")}
+            </FieldDescription>
+          )}
         </Field>
 
         <Field>
@@ -59,9 +58,11 @@ export default function SignUp() {
             type="email"
             placeholder="m@example.com"
           />
-          {
-            getFeildError("email") && (<FieldDescription className="text-red-600">error {getFeildError("email")}</FieldDescription>)
-          }
+          {getFeildError("email") && (
+            <FieldDescription className="text-red-600">
+              error {getFeildError("email")}
+            </FieldDescription>
+          )}
         </Field>
 
         {/* Password Field */}
@@ -85,9 +86,11 @@ export default function SignUp() {
               {showPassword ? <EyeOff /> : <Eye />}
             </Button>
           </div>
-          {
-            getFeildError("password") && (<FieldDescription className="text-red-600">error {getFeildError("password")}</FieldDescription>)
-          }
+          {getFeildError("password") && (
+            <FieldDescription className="text-red-600">
+              error {getFeildError("password")}
+            </FieldDescription>
+          )}
         </Field>
 
         {/* Confirm Password Field */}
@@ -111,9 +114,11 @@ export default function SignUp() {
               {confirmShowPassword ? <EyeOff /> : <Eye />}
             </Button>
           </div>
-          {
-            getFeildError("confirmPassword") && (<FieldDescription className="text-red-600">error {getFeildError("confirmPassword")}</FieldDescription>)
-          }
+          {getFeildError("confirmPassword") && (
+            <FieldDescription className="text-red-600">
+              error {getFeildError("confirmPassword")}
+            </FieldDescription>
+          )}
         </Field>
 
         <FieldGroup>
