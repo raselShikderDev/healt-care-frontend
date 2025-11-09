@@ -1,12 +1,13 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { Eye, EyeOff, Loader2, LogIn } from "lucide-react";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { logInUser } from "@/services/auth/logInUser";
 import { FieldDescription } from "@/components/ui/field";
+import { toast } from "react-toastify";
 
 export type LoginFormInputs = {
   email: string;
@@ -16,7 +17,7 @@ export type LoginFormInputs = {
 export default function LoginForm({ redirect }: { redirect?: string }) {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [state, formActoin, isPending] = useActionState(logInUser, null);
-console.log(state);
+  console.log({state:state?.message});
 
   const getFeildError = (feildName: string) => {
     if (state && state.errors) {
@@ -27,61 +28,18 @@ console.log(state);
       return null;
     }
   };
+  
+console.log(state);
 
-  // const router = useRouter();
+  useEffect(() => {
+    if (state && !state.success && state.message) {
+      toast.error(state.message || "Somthing went wrong! Login failed");
+    }
+    if (state && state.success && state.message) {
+      toast.success(state.message || "Successfully logged In");
+    }
+  }, [state]);
 
-  // const onSubmit = async (data: LoginFormInputs) => {
-  //   const payload = {
-  //     email: data.email,
-  //     password: data.password,
-  //   };
-  //   try {
-  //     const res = await loginUser(payload);
-  //     // console.log("[In login.tsx] res in login file", res);
-  //     console.log("[In login.tsx] res.success", res.success);
-  //     console.log(res);
-
-  //     if (res.success) {
-  //       const authStatus = await checkAuthStatus();
-  //       console.log("[In login.tsx] authStatus", authStatus);
-  //       // if (condition) {
-  //       // }
-  //       if (authStatus.isAuthenticated && authStatus.user) {
-  //         const { role } = authStatus.user;
-  //         switch (role) {
-  //           case "ADMIN":
-  //             toast.success("Admin successfully logged in");
-  //             router.push(`/${role.toLowerCase()}/dashboard`);
-  //             break;
-  //           case "PATIENT":
-  //             toast.success("Patient successfully logged in");
-  //             router.push(`/${role.toLowerCase()}/dashboard`);
-  //             break;
-  //           case "DOCTOR":
-  //             toast.success("Doctor successfully logged in");
-  //             router.push(`/${role.toLowerCase()}/dashboard`);
-  //             break;
-
-  //           default:
-  //             router.push("/");
-  //             break;
-  //         }
-  //       }
-  //     } else {
-  //       toast.error(res.message || "Somthing went wrong! Login failed");
-  //     }
-
-  //     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  //   } catch (error: any) {
-  //     console.log(error);
-
-  //     toast.error(error.message || "Login failed");
-  //     console.error(
-  //       error.message ||
-  //         "Login failed. Please check your credentials and try again."
-  //     );
-  //   }
-  // };
 
   return (
     <div className="">

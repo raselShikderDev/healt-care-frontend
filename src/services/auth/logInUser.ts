@@ -55,7 +55,7 @@ export const logInUser = async (_currentState: any, formData: any) => {
       body: JSON.stringify(validatedFeild.data),
       credentials: "include",
     });
-    const data = res.json();
+    const data = await res.json();
 
     const setCookieHeader = res.headers.getSetCookie();
 
@@ -82,7 +82,6 @@ export const logInUser = async (_currentState: any, formData: any) => {
       throw new Error("No refreshToken found");
     }
 
-
     await setCookie("accessToken", accessTokenObject.accessToken, {
       httpOnly: true,
       secure: true,
@@ -100,8 +99,6 @@ export const logInUser = async (_currentState: any, formData: any) => {
       // expires:refreshTokenObject.Expires,
     });
 
-    console.log(data);
-
     let userRole: UserRole | null = null;
     const verifiedToken: JwtPayload | any = jwt.verify(
       accessTokenObject.accessToken,
@@ -113,6 +110,11 @@ export const logInUser = async (_currentState: any, formData: any) => {
     }
     userRole = verifiedToken.role;
 
+    if (!data.success) {
+      throw new Error(data.message || "Login failed");
+    }
+    console.log({ data });
+
     if (redirectTo) {
       const requestedPath = redirectTo.toString();
       if (isValidRedirectRoute(requestedPath, userRole as UserRole)) {
@@ -123,12 +125,18 @@ export const logInUser = async (_currentState: any, formData: any) => {
     } else {
       redirect(getDefaultDashboard(userRole as UserRole));
     }
-
   } catch (error: any) {
     if (error?.digest?.startsWith("NEXT_REDIRECT")) {
       throw error;
     }
     console.error(error);
-    return { error: "Login failed" };
+    return {
+      success: false,
+      message: `${
+        process.env.NODE_ENV === "development"
+          ? error.message
+          : "Failed to login! you might have entered wrong credentials"
+      }`,
+    };
   }
 };
