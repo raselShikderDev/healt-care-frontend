@@ -13,20 +13,20 @@ export type LoginFormInputs = {
   password: string;
 };
 
-export default function Login() {
+export default function LoginForm({ redirect }: { redirect?: string }) {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [state, formActoin, isPending] = useActionState(logInUser, null);
+console.log(state);
 
   const getFeildError = (feildName: string) => {
     if (state && state.errors) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const error = state?.errors.find((err: any) => err.feild === feildName)
-      return error?.message
+      const error = state?.errors.find((err: any) => err.feild === feildName);
+      return error?.message;
     } else {
-      return null
+      return null;
     }
-  }
-
+  };
 
   // const router = useRouter();
 
@@ -84,12 +84,10 @@ export default function Login() {
   // };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="max-w-md w-full bg-white p-8 rounded-2xl shadow-lg">
-        <h2 className="text-2xl font-bold text-gray-900 text-center mb-6">
-          {isPending ? "Logging in" : "Login to Your Account"}
-        </h2>
+    <div className="">
+      <div className="">
         <form action={formActoin} className="space-y-4">
+          {redirect && <Input type="hidden" name="redirect" value={redirect} />}
           {/* Email */}
           <div>
             <label
@@ -104,9 +102,11 @@ export default function Login() {
               className={`mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 outline-none `}
               placeholder="you@example.com"
             />
-            {
-              getFeildError("email") && (<FieldDescription className="text-red-600">error {getFeildError("email")}</FieldDescription>)
-            }
+            {getFeildError("email") && (
+              <FieldDescription className="text-red-600">
+                error {getFeildError("email")}
+              </FieldDescription>
+            )}
           </div>
 
           {/* Password */}
@@ -138,9 +138,11 @@ export default function Login() {
                 )}
               </Button>
             </div>
-            {
-              getFeildError("password") && (<FieldDescription className="text-red-600">{getFeildError("password")}</FieldDescription>)
-            }
+            {getFeildError("password") && (
+              <FieldDescription className="text-red-600">
+                {getFeildError("password")}
+              </FieldDescription>
+            )}
           </div>
 
           {/* Remember me & forgot password */}
