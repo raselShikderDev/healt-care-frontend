@@ -13,7 +13,7 @@ interface userDropdownProps {
     userInfo: IUserInfo 
 }
 
-const UserDropdown = async ({ userInfo }: userDropdownProps) => {
+const UserDropdown = ({ userInfo }: userDropdownProps) => {
 
     const handleLogout = async () => {
         await logOutUser()
@@ -21,7 +21,7 @@ const UserDropdown = async ({ userInfo }: userDropdownProps) => {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="icon" className="rounded-full">
+                <Button variant="outline" size="icon" className="rounded-full cursor-pointer">
                     <span className="text-sm font-semibold">
                         {userInfo?.name?.charAt(0).toUpperCase()}
                     </span>

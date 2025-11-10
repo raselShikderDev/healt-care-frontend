@@ -1,5 +1,5 @@
-import DashboardNavbar from "@/components/modules/dashboard/dashboardNavbar";
-import DashboardSidebar from "@/components/modules/dashboard/dashboardSidebar";
+import DashboardNavbar from "@/components/modules/dashboard/DashboardNavbar";
+import DashboardSidebar from "@/components/modules/dashboard/DashboardSidebar";
 
 export default async function CommonDashboardLayout({
     children,

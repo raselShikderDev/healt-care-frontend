@@ -6,24 +6,22 @@ import { toast } from "react-toastify";
 
 const SuccessLogoutToast = () => {
   const searchParams = useSearchParams();
-  const router = useRouter()
+  const router = useRouter();
 
   useEffect(() => {
     console.log();
     if (searchParams.get("logout") === "true") {
       toast.success("You have been successfully Logout");
 
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.delete("logout");
+      router.replace(newUrl.toString());
     }
-
-    const newUrl = window.location.pathname;
-    router.replace(newUrl.toString())
-
-  }, []);
-  return null
+  });
+  return null;
 };
 
 export default SuccessLogoutToast;
-
 
 // useEffect(() => {
 //   const loggedIn = searchParams.get("loggedIn");
