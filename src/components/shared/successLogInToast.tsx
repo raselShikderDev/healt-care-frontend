@@ -8,15 +8,26 @@ const SuccessLoggedInToast = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  useEffect(() => {
-    console.log();
-    if (searchParams.get("loggedIn") === "true") {
+  // useEffect(() => {
+  //   console.log();
+  //   if (searchParams.get("loggedIn") === "true") {
+  //     toast.success("You have been logged in successfully");
+  //   }
+  //   const newUrl = new URL(window.location.href);
+  //   newUrl.searchParams.delete("loggedIn");
+  //   router.replace(newUrl.toString());
+  // }, [searchParams, router]);
+
+   useEffect(() => {
+    const loggedIn = searchParams.get("loggedIn");
+
+    if (loggedIn === "true") {
       toast.success("You have been logged in successfully");
+
+      const newUrl = window.location.pathname; // remove all search params
+      router.replace(newUrl); // replace only once
     }
-    const newUrl = new URL(window.location.href);
-    newUrl.searchParams.delete("loggedIn");
-    router.replace(newUrl.toString());
-  }, [searchParams, router]);
+  }, []); // run only once on mount
   return null;
 };
 

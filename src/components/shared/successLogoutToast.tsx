@@ -12,14 +12,26 @@ const SuccessLogoutToast = () => {
     console.log();
     if (searchParams.get("logout") === "true") {
       toast.success("You have been successfully Logout");
+
     }
 
-    const newUrl = new URL(window.location.href)
-    newUrl.searchParams.delete("logout")
+    const newUrl = window.location.pathname;
     router.replace(newUrl.toString())
 
-  }, [searchParams, router]);
+  }, []);
   return null
 };
 
 export default SuccessLogoutToast;
+
+
+// useEffect(() => {
+//   const loggedIn = searchParams.get("loggedIn");
+
+//   if (loggedIn === "true") {
+//     toast.success("You have been logged in successfully");
+
+//     const newUrl = window.location.pathname; // remove all search params
+//     router.replace(newUrl); // replace only once
+//   }
+// }, []); // run only once on mount
