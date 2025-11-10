@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff, Lock } from "lucide-react";
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Field,
@@ -14,6 +14,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { signupPatient } from "@/services/auth/signupPatient";
+import { toast } from "react-toastify";
 
 export default function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
@@ -36,6 +37,16 @@ export default function SignUp() {
       return null;
     }
   };
+
+  useEffect(() => {
+      if (state && !state.success && state.message) {
+        toast.error(state.message || "Somthing went wrong! SignUp failed");
+      }
+      if (state && state.success && state.message) {
+        toast.success(state.message || "Account successfully created");
+      }
+    }, [state]);
+  
 
   return (
     <form action={formActoin} className="space-y-5">

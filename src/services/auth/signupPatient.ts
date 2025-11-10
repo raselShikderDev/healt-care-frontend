@@ -83,6 +83,13 @@ export const signupPatient = async (
       throw error;
     }
     console.error(error);
-    return { error: "Signing Up is failed" };
+     return {
+      success: false,
+      message: `${
+        process.env.NODE_ENV === "development"
+          ? error.message
+          : "SignUp failed! Please try again."
+      }`,
+    };
   }
 };

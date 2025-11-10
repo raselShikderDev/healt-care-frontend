@@ -118,12 +118,12 @@ export const logInUser = async (_currentState: any, formData: any) => {
     if (redirectTo) {
       const requestedPath = redirectTo.toString();
       if (isValidRedirectRoute(requestedPath, userRole as UserRole)) {
-        redirect(requestedPath);
+        redirect(`${requestedPath}?loggedIn=true`);
       } else {
-        redirect(getDefaultDashboard(userRole as UserRole));
+        redirect(`${getDefaultDashboard(userRole as UserRole)}?loggedIn=true`);
       }
     } else {
-      redirect(getDefaultDashboard(userRole as UserRole));
+      redirect(`${getDefaultDashboard(userRole as UserRole)}?loggedIn=true`);
     }
   } catch (error: any) {
     if (error?.digest?.startsWith("NEXT_REDIRECT")) {

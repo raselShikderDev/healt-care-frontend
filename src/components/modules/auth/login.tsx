@@ -29,7 +29,6 @@ export default function LoginForm({ redirect }: { redirect?: string }) {
     }
   };
   
-console.log(state);
 
   useEffect(() => {
     if (state && !state.success && state.message) {
