@@ -3,7 +3,14 @@
 
 import z from "zod";
 import { parse } from "cookie";
-import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import jwt, { JwtPayload } from "jsonwebtoken";
+import {
+  getDefaultDashboard,
+  isValidRedirectRoute,
+  UserRole,
+} from "@/lib/authUtils";
+import { setCookie } from "@/lib/tokenHandler";
 
 const logInUserSchema = z.object({
   email: z.email({ error: "Email is required" }),
@@ -15,6 +22,9 @@ const logInUserSchema = z.object({
 });
 
 export const logInUser = async (_currentState: any, formData: any) => {
+  const redirectTo = formData.get("redirect");
+  console.log(`Redirect from ${redirectTo}`);
+
   let accessTokenObject: null | any = null;
   let refreshTokenObject: null | any = null;
   const signInData = {
@@ -36,8 +46,6 @@ export const logInUser = async (_currentState: any, formData: any) => {
     };
   }
 
-  // console.log({ validatedFeild });
-
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/auth/login`, {
       method: "POST",
@@ -47,14 +55,13 @@ export const logInUser = async (_currentState: any, formData: any) => {
       body: JSON.stringify(validatedFeild.data),
       credentials: "include",
     });
-    const data = res.json();
+    const data = await res.json();
 
     const setCookieHeader = res.headers.getSetCookie();
 
     if (setCookieHeader && setCookieHeader.length > 0) {
       setCookieHeader.forEach((cookie: string) => {
         const parsedCookie = parse(cookie);
-        console.log(parsedCookie);
 
         if (parsedCookie["accessToken"]) {
           accessTokenObject = parsedCookie;
@@ -75,30 +82,61 @@ export const logInUser = async (_currentState: any, formData: any) => {
       throw new Error("No refreshToken found");
     }
 
-    const cookieStore = await cookies();
-
-    cookieStore.set("accessToken", accessTokenObject.accessToken, {
+    await setCookie("accessToken", accessTokenObject.accessToken, {
       httpOnly: true,
       secure: true,
       path: accessTokenObject.path || "/",
       maxAge: Number(accessTokenObject["maxAge"]) || 1000 * 60 * 60,
-      sameSite:accessTokenObject["sameSite"] || "none",
+      sameSite: accessTokenObject["sameSite"] || "none",
       // expires:accessTokenObject.Expires,
     });
-    cookieStore.set("refreshToken", refreshTokenObject.refreshToken, {
+    await setCookie("refreshToken", refreshTokenObject.refreshToken, {
       httpOnly: true,
       secure: true,
       path: refreshTokenObject.path || "/",
       maxAge: Number(refreshTokenObject["maxAge"]) || 1000 * 60 * 60 * 24 * 30,
-      sameSite:refreshTokenObject["sameSite"] || "none",
+      sameSite: refreshTokenObject["sameSite"] || "none",
       // expires:refreshTokenObject.Expires,
     });
 
-    console.log({ refreshToken: refreshTokenObject.refreshToken });
+    let userRole: UserRole | null = null;
+    const verifiedToken: JwtPayload | any = jwt.verify(
+      accessTokenObject.accessToken,
+      process.env.JWT_ACCESS_SECRET as string
+    );
 
-    return data;
-  } catch (error) {
+    if (typeof verifiedToken === "string") {
+      throw new Error("Invalid token");
+    }
+    userRole = verifiedToken.role;
+
+    if (!data.success) {
+      throw new Error(data.message || "Login failed");
+    }
+    console.log({ data });
+
+    if (redirectTo) {
+      const requestedPath = redirectTo.toString();
+      if (isValidRedirectRoute(requestedPath, userRole as UserRole)) {
+        redirect(`${requestedPath}?loggedIn=true`);
+      } else {
+        redirect(`${getDefaultDashboard(userRole as UserRole)}?loggedIn=true`);
+      }
+    } else {
+      redirect(`${getDefaultDashboard(userRole as UserRole)}?loggedIn=true`);
+    }
+  } catch (error: any) {
+    if (error?.digest?.startsWith("NEXT_REDIRECT")) {
+      throw error;
+    }
     console.error(error);
-    return { error: "Login failed" };
+    return {
+      success: false,
+      message: `${
+        process.env.NODE_ENV === "development"
+          ? error.message
+          : "Failed to login! you might have entered wrong credentials"
+      }`,
+    };
   }
 };

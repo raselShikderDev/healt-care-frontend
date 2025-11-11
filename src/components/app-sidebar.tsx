@@ -1,5 +1,3 @@
-"use client";
-
 import * as React from "react";
 import {
   Sidebar,
@@ -15,12 +13,9 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
-import { Button } from "./ui/button";
 import { Separator } from "./ui/separator";
-import { useState } from "react";
-import { logOutUser } from "@/utility/logoutUser";
-import { Loader2, LogOut } from "lucide-react";
-import { useUser } from "@/providers/userProvider";
+import { getCookie } from "@/lib/tokenHandler";
+import LogoutButtonAppSidebar from "./shared/logoutButtonAppSidebar";
 
 // This is sample data.
 const data = {
@@ -79,21 +74,10 @@ const data = {
   ],
 };
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { setUser } = useUser();
-
-  const handleLogout = async () => {
-    try {
-      setIsLoading(true);
-      await logOutUser();
-      setUser(null);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+export async function AppSidebar({
+  ...props
+}: React.ComponentProps<typeof Sidebar>) {
+  const accessToken = await getCookie("accessToken");
 
   return (
     <Sidebar {...props}>
@@ -119,19 +103,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
       <Separator />
       <SidebarFooter className="pt-3">
-        <Button
-          variant={"destructive"}
-          className="w-full py-2 font-semibold text-center cursor-pointer"
-          onClick={handleLogout}
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <Loader2 className="w-5 h-5 animate-spin" />
-          ) : (
-            <LogOut className="w-5 h-5" />
-          )}
-          {!isLoading && "logout"}
-        </Button>
+        {accessToken && <LogoutButtonAppSidebar />}
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
