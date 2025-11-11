@@ -1,6 +1,5 @@
 "use client";
 
-
 import { NavSection } from "@/types/dashboard.interface";
 import { IUserInfo } from "@/types/user.interface";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
@@ -9,7 +8,8 @@ import { usePathname } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-import { Icon } from "lucide-react";
+import getIconComponent from "@/lib/iconMapper";
+import { Logo } from "@/components/logo";
 
 interface DashboardSidebarContentProps {
   userInfo: IUserInfo;
@@ -23,12 +23,17 @@ const DashBoardSidebarContent = ({
   dashboardHome,
 }: DashboardSidebarContentProps) => {
   const pathname = usePathname();
-    return (
+  return (
     <div className="hidden md:flex h-full w-64 flex-col border-r bg-card">
       {/* Logo/Brand */}
       <div className="flex h-16 items-center border-b px-6">
-        <Link href={dashboardHome || ""} className="flex items-center space-x-2">
-          <span className="text-xl font-bold text-primary">PH Healthcare</span>
+        <Link
+          href={dashboardHome || ""}
+          className="flex items-center space-x-2"
+        >
+          <span className="text-xl font-bold text-primary">
+            <Logo />
+          </span>
         </Link>
       </div>
 
@@ -45,7 +50,7 @@ const DashBoardSidebarContent = ({
               <div className="space-y-1">
                 {section.items.map((item) => {
                   const isActive = pathname === item.href;
-                //   const Icon = getIconComponent(item.icon);
+                  const Icon = getIconComponent(item.icon);
 
                   return (
                     <Link
@@ -58,7 +63,7 @@ const DashBoardSidebarContent = ({
                           : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                       )}
                     >
-                      <Icon className="h-4 w-4" iconNode={[]} />
+                      <Icon className="h-4 w-4" />
                       <span className="flex-1">{item?.title}</span>
                       {item.badge && (
                         <Badge
@@ -98,7 +103,6 @@ const DashBoardSidebarContent = ({
       </div>
     </div>
   );
-
 };
 
 export default DashBoardSidebarContent;

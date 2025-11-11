@@ -17,9 +17,11 @@ import {
 // import { Loader2, LogOut, Menu } from "lucide-react";
 import { Menu } from "lucide-react";
 import { ComponentProps } from "react";
-import { getCookie } from "@/lib/tokenHandler";
 import LogoutButton from "./logoutButton";
 import LogoutButtonMobile from "./logoutButtonMobile";
+import { getUserInfo } from "@/services/auth/getUserInfo";
+import { IUserInfo } from "@/types/user.interface";
+import { getDefaultDashboard } from "@/lib/authUtils";
 
 const PublicNavbar = async (props: ComponentProps<typeof NavigationMenu>) => {
   const navItems = [
@@ -30,15 +32,16 @@ const PublicNavbar = async (props: ComponentProps<typeof NavigationMenu>) => {
     { name: "NGOs", href: "/ngo", role: "PUBLIC" },
   ];
 
-  const accessToken = await getCookie("accessToken");
+  const userInfo = (await getUserInfo()) as IUserInfo;
+  const dashboardHome = getDefaultDashboard(userInfo?.role);
 
-  // if ( user && user?.role) {
-  //   navItems.push({
-  //     name: "Dashboard",
-  //     href: `/${user?.role.toLowerCase()}/dashboard`,
-  //     role: user?.role,
-  //   });
-  // }
+  if (userInfo && userInfo?.role) {
+    navItems.push({
+      name: "Dashboard",
+      href: `/${dashboardHome.toLowerCase()}`,
+      role: userInfo?.role,
+    });
+  }
 
   return (
     <nav className="h-16 bg-background border-b">
@@ -66,7 +69,7 @@ const PublicNavbar = async (props: ComponentProps<typeof NavigationMenu>) => {
 
         <div className="flex items-center gap-3">
           {/* Desktop login button */}
-          {accessToken ? (
+          {userInfo?.role ? (
             <LogoutButton />
           ) : (
             <Link
@@ -111,7 +114,7 @@ const PublicNavbar = async (props: ComponentProps<typeof NavigationMenu>) => {
 
                 {/* Footer inside sheet */}
                 <SheetFooter className="mt-auto border-t pt-4">
-                  {accessToken ? (
+                  {userInfo?.role ? (
                     <LogoutButtonMobile />
                   ) : (
                     <Link
