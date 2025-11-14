@@ -6,8 +6,9 @@ import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { logInUser } from "@/services/auth/logInUser";
-import { FieldDescription } from "@/components/ui/field";
 import { toast } from "react-toastify";
+import InputFeildError from "@/components/shared/InputFeildError";
+import { IInputErrorState } from "@/lib/getInputFeildError";
 
 export type LoginFormInputs = {
   email: string;
@@ -17,25 +18,14 @@ export type LoginFormInputs = {
 export default function LoginForm({ redirect }: { redirect?: string }) {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [state, formActoin, isPending] = useActionState(logInUser, null);
-  console.log({state:state?.message});
+ 
+console.log({state});
 
-  const getFeildError = (feildName: string) => {
-    if (state && state.errors) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const error = state?.errors.find((err: any) => err.feild === feildName);
-      return error?.message;
-    } else {
-      return null;
-    }
-  };
-  
 
-  useEffect(() => {
+
+useEffect(() => {
     if (state && !state.success && state.message) {
-      toast.error(state.message || "Somthing went wrong! Login failed");
-    }
-    if (state && state.success && state.message) {
-      toast.success(state.message || "Successfully logged In");
+      toast.error(state.message);
     }
   }, [state]);
 
@@ -59,11 +49,8 @@ export default function LoginForm({ redirect }: { redirect?: string }) {
               className={`mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 outline-none `}
               placeholder="you@example.com"
             />
-            {getFeildError("email") && (
-              <FieldDescription className="text-red-600">
-                error {getFeildError("email")}
-              </FieldDescription>
-            )}
+        
+              <InputFeildError feild="email" state={state as IInputErrorState} />
           </div>
 
           {/* Password */}
@@ -95,11 +82,7 @@ export default function LoginForm({ redirect }: { redirect?: string }) {
                 )}
               </Button>
             </div>
-            {getFeildError("password") && (
-              <FieldDescription className="text-red-600">
-                {getFeildError("password")}
-              </FieldDescription>
-            )}
+             <InputFeildError feild="password" state={state as IInputErrorState} />
           </div>
 
           {/* Remember me & forgot password */}

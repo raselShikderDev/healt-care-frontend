@@ -5,25 +5,9 @@ import z from "zod";
 import { logInUser } from "./logInUser";
 import { serverFetch } from "@/lib/serverFetch";
 import { zodValidator } from "@/lib/zodValidator";
+import { signUpPatientValidationSchema } from "@/zod/auth";
 
-const signUpPatientValidationSchema = z
-  .object({
-    name: z.string().nonempty("Name is required"),
-    email: z.email().nonempty("Email is required"),
-    password: z
-      .string()
-      .nonempty("Password is required")
-      .min(8, { error: "Password must be at least 8 character" })
-      .max(30, { error: "Password must be at most 30 character" }),
-    confirmPassword: z
-      .string()
-      .nonempty("Password is required")
-      .min(8, { error: "Confirm password must be at least 8 character" })
-      .max(30, { error: "Confirm password must be at most 30 character" }),
-  })
-  .refine((data: any) => data.password === data.confirmPassword, {
-    message: "Password does not match",
-  });
+
 
 export const signupPatient = async (
   _currentState: any,
@@ -58,7 +42,7 @@ export const signupPatient = async (
     const newFormData = new FormData();
     newFormData.append("data", JSON.stringify(signUpData));
 
-    const res = await serverFetch.post(`${process.env.NEXT_PUBLIC_BASE_URL}/users/create-patient`,
+    const res = await serverFetch.post(`/users/create-patient`,
       {
         body: newFormData,
       }

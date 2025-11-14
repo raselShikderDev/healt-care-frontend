@@ -13,15 +13,8 @@ import {
 import { setCookie } from "@/lib/tokenHandler";
 import { serverFetch } from "@/lib/serverFetch";
 import { zodValidator } from "@/lib/zodValidator";
+import { logInUserSchema } from "@/zod/auth";
 
-const logInUserSchema = z.object({
-  email: z.email({ error: "Email is required" }),
-  password: z
-    .string()
-    .nonempty("Password is required")
-    .min(8, { error: "Password must be at least 8 character" })
-    .max(30, { error: "Password must be at most 30 character" }),
-});
 
 export const logInUser = async (_currentState: any, formData: any) => {
   const redirectTo = formData.get("redirect");
@@ -44,8 +37,11 @@ export const logInUser = async (_currentState: any, formData: any) => {
 
 
   try {
-    const res = await serverFetch.post(`${process.env.NEXT_PUBLIC_BASE_URL}/auth/login`, {
+    const res = await serverFetch.post(`/auth/login`, {
       body: JSON.stringify(validatedData),
+        headers: {
+                "Content-Type": "application/json",
+            }
     });
     const data = await res.json();
 
@@ -78,16 +74,16 @@ export const logInUser = async (_currentState: any, formData: any) => {
       httpOnly: true,
       secure: true,
       path: accessTokenObject.path || "/",
-      maxAge: Number(accessTokenObject["maxAge"]) || 1000 * 60 * 60,
-      sameSite: accessTokenObject["sameSite"] || "none",
+      maxAge: parseInt(accessTokenObject['Max-Age']) || 1000 * 60 * 60,
+      sameSite: accessTokenObject['SameSite']|| "none",
       // expires:accessTokenObject.Expires,
     });
     await setCookie("refreshToken", refreshTokenObject.refreshToken, {
       httpOnly: true,
       secure: true,
       path: refreshTokenObject.path || "/",
-      maxAge: Number(refreshTokenObject["maxAge"]) || 1000 * 60 * 60 * 24 * 30,
-      sameSite: refreshTokenObject["sameSite"] || "none",
+      maxAge: parseInt(refreshTokenObject['Max-Age']) || 1000 * 60 * 60 * 24 * 30,
+      sameSite: refreshTokenObject['SameSite'] || "none",
       // expires:refreshTokenObject.Expires,
     });
 
