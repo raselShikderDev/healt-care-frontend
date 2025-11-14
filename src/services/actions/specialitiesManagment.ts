@@ -1,11 +1,27 @@
 import { serverFetch } from "@/lib/serverFetch"
-import z, { success } from "zod"
+import z, { json } from "zod"
 
 const creatSpecialitiesZodSchema = z.object({
     title: z.string().min(3, "Title must be at least 3 character")
 })
 
-export const getSpecilites = async () => { }
+export const getSpecilites = async () => {
+    try {
+        const res = await serverFetch.get("/specialties")
+
+        const result = await res.json()
+        return result
+    } catch (error: any) {
+        console.log(error);
+        return {
+            success: false,
+            message: `${process.env.NODE_ENV === "development"
+                ? error.message
+                : "Failed to get specilities"
+                }`,
+        }
+    }
+}
 
 
 export const createSpecilites = async (_prevData: any, formData: FormData) => {
@@ -48,8 +64,8 @@ export const createSpecilites = async (_prevData: any, formData: FormData) => {
         return {
             success: false,
             message: `${process.env.NODE_ENV === "development"
-                    ? error.message
-                    : "Failed to create specilities"
+                ? error.message
+                : "Failed to create specilities"
                 }`,
         }
     }
@@ -59,4 +75,20 @@ export const createSpecilites = async (_prevData: any, formData: FormData) => {
 
 }
 
-export const deleteSpecilites = async (id: string) => { }
+export const deleteSpecilites = async (id: string) => {
+     try {
+        const res = await serverFetch.delete(`/specialties/${id}`)
+
+        const result = await res.json()
+        return result
+    } catch (error: any) {
+        console.log(error);
+        return {
+            success: false,
+            message: `${process.env.NODE_ENV === "development"
+                ? error.message
+                : "Failed to delete specilities"
+                }`,
+        }
+    }
+ }
