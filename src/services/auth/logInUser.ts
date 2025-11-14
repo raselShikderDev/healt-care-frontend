@@ -11,6 +11,8 @@ import {
   UserRole,
 } from "@/lib/authUtils";
 import { setCookie } from "@/lib/tokenHandler";
+import { serverFetch } from "@/lib/serverFetch";
+import { zodValidator } from "@/lib/zodValidator";
 
 const logInUserSchema = z.object({
   email: z.email({ error: "Email is required" }),
@@ -32,28 +34,18 @@ export const logInUser = async (_currentState: any, formData: any) => {
     password: formData.get("password"),
   };
 
-  const validatedFeild = logInUserSchema.safeParse(signInData);
 
-  if (!validatedFeild.success) {
-    return {
-      success: false,
-      errors: validatedFeild.error.issues.map((issue) => {
-        return {
-          feild: issue.path[0],
-          message: issue.message,
-        };
-      }),
-    };
+
+  if (zodValidator(signInData, logInUserSchema).success === false) {
+    return zodValidator(signInData, logInUserSchema)
   }
 
+  const validatedData = zodValidator(signInData, logInUserSchema).data
+
+
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/auth/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(validatedFeild.data),
-      credentials: "include",
+    const res = await serverFetch.post(`${process.env.NEXT_PUBLIC_BASE_URL}/auth/login`, {
+      body: JSON.stringify(validatedData),
     });
     const data = await res.json();
 
@@ -132,11 +124,10 @@ export const logInUser = async (_currentState: any, formData: any) => {
     console.error(error);
     return {
       success: false,
-      message: `${
-        process.env.NODE_ENV === "development"
+      message: `${process.env.NODE_ENV === "development"
           ? error.message
           : "Failed to login! you might have entered wrong credentials"
-      }`,
+        }`,
     };
   }
 };

@@ -3,6 +3,8 @@
 
 import z from "zod";
 import { logInUser } from "./logInUser";
+import { serverFetch } from "@/lib/serverFetch";
+import { zodValidator } from "@/lib/zodValidator";
 
 const signUpPatientValidationSchema = z
   .object({
@@ -30,44 +32,34 @@ export const signupPatient = async (
   console.log({ confirmPass: formData.get("confirmPassword") });
 
   try {
-    const validationData = {
+    const paylaod = {
       email: formData.get("email"),
       password: formData.get("password"),
       name: formData.get("name"),
-      confirmPassword:formData.get("confirmPassword")
+      confirmPassword: formData.get("confirmPassword")
     };
 
-    const validatedFeild = signUpPatientValidationSchema.safeParse(validationData);
+      if (zodValidator(paylaod, signUpPatientValidationSchema).success === false) {
+            return zodValidator(paylaod, signUpPatientValidationSchema)
+        }
 
-    if (!validatedFeild.success) {
-      return {
-        success: false,
-        errors: validatedFeild.error.issues.map((issue) => {
-          return {
-            feild: issue.path[0],
-            message: issue.message,
-          };
-        }),
-      };
-    }
+        const validatedData:any = zodValidator(paylaod, signUpPatientValidationSchema).data
 
     const signUpData = {
       patient: {
-        email: formData.get("email"),
-        name: formData.get("name"),
+        email: validatedData.email,
+        name: validatedData.name,
       },
-      password: formData.get("password"),
+      password: validatedData.password,
     };
 
-    console.log({ signUpData });
+    // console.log({ signUpData });
 
     const newFormData = new FormData();
     newFormData.append("data", JSON.stringify(signUpData));
 
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/users/create-patient`,
+    const res = await serverFetch.post(`${process.env.NEXT_PUBLIC_BASE_URL}/users/create-patient`,
       {
-        method: "POST",
         body: newFormData,
       }
     );
@@ -83,13 +75,12 @@ export const signupPatient = async (
       throw error;
     }
     console.error(error);
-     return {
+    return {
       success: false,
-      message: `${
-        process.env.NODE_ENV === "development"
+      message: `${process.env.NODE_ENV === "development"
           ? error.message
           : "SignUp failed! Please try again."
-      }`,
+        }`,
     };
   }
 };

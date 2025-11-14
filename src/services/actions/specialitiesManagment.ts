@@ -1,9 +1,11 @@
 import { serverFetch } from "@/lib/serverFetch"
+import { zodValidator } from "@/lib/zodValidator"
 import z, { json } from "zod"
 
 const creatSpecialitiesZodSchema = z.object({
     title: z.string().min(3, "Title must be at least 3 character")
 })
+
 
 export const getSpecilites = async () => {
     try {
@@ -30,22 +32,18 @@ export const createSpecilites = async (_prevData: any, formData: FormData) => {
             title: formData.get("title") as string
         }
 
-        const validatedData = creatSpecialitiesZodSchema.safeParse(payload)
+       
 
-        if (!validatedData.success) {
-            return {
-                success: false,
-                errors: validatedData.error.issues.map((issue) => {
-                    return {
-                        feild: issue.path[0],
-                        message: issue.message,
-                    };
-                }),
-            };
+        if (zodValidator(payload, creatSpecialitiesZodSchema).success === false) {
+            return zodValidator(payload, creatSpecialitiesZodSchema)
         }
+
+        const validatedData = zodValidator(payload, creatSpecialitiesZodSchema).data
+
         const newFormData = new FormData()
 
         newFormData.append("data", JSON.stringify(validatedData))
+
         if (formData.get("file")) {
             newFormData.append("file", formData.get("file") as Blob)
         }
