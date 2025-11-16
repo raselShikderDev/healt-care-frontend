@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 
 const SpecialitiesManagmentHeader = () => {
     const router = useRouter()
-    const [startTransition] = useTransition()
+    const [, startTransition] = useTransition()
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false)
 
 

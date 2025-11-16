@@ -3,7 +3,7 @@ import { TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/ta
 import { Skeleton } from "../ui/skeleton";
 
 interface TableSceletonProps {
-    columns: string;
+    columns: number;
     rows?: number;
     showActions?: boolean;
 }

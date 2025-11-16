@@ -45,7 +45,9 @@ function ManagmentTable<T>({
   emptyMessage = "No records found",
   isRefreshing = false,
 }: ManagmentTAbleProps<T>) {
+  
   const hasActions = onDelete || onEdit || onView;
+
   return (
     <>
       <div className="rounded-lg border relative">
@@ -107,7 +109,7 @@ function ManagmentTable<T>({
                               <MoreHorizontal className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
+                          <DropdownMenuContent className="cursor-pointer" align="end">
                             {onView && (
                               <DropdownMenuItem onClick={() => onView(item)}>
                                 <Eye className="mr-2 h-4 w-4 cursor-pointer" />

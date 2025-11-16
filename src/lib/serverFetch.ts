@@ -1,36 +1,54 @@
-import { getCookie } from "./tokenHandler"
+import { getCookie } from "./tokenHandler";
 
+const serverFetchHelper = async (
+  endpoint: string,
+  options: RequestInit
+): Promise<Response> => {
+  const { headers, ...restOptions } = options;
+  const accessToken = await getCookie("accessToken");
 
-const serverFetchHelper = async (endPoint:string, options:RequestInit ):Promise<Response>=>{
-    const {headers, ...restOpions} = options
-    // const accessToken = await getCookie("accessToken")
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL as string}${endPoint}`, {
-     headers: {
-            ...headers,
-            // ...(accessToken ? { "Authorization": `Bearer ${accessToken}` } : {}),
-            // ...(accessToken ? { "Authorization": accessToken } : {}),
-            // Cookie: accessToken ? `accessToken=${accessToken}` : "",
-        },
-        ...restOpions,
-    });
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL as string}${endpoint}`,
+    {
+      headers: {
+        ...headers,
+        // ...(accessToken ? { "Authorization": `Bearer ${accessToken}` } : {}),
+        // ...(accessToken ? { "Authorization": accessToken } : {}),
+        Cookie: accessToken ? `accessToken=${accessToken}` : "",
+      },
+      ...restOptions,
+      credentials: "include",
+    }
+  );
 
-    return res
-}
-
+  return response;
+};
 
 export const serverFetch = {
-    get: async(endPoint:string, options:RequestInit = {}):Promise<Response>=> (serverFetchHelper(endPoint,{ ...options, method:"GET"})),
+  get: async (endPoint: string, options: RequestInit = {}): Promise<Response> =>
+    serverFetchHelper(endPoint, { ...options, method: "GET" }),
 
-    post: async(endPoint:string, options:RequestInit = {}):Promise<Response>=> (serverFetchHelper(endPoint,{ ...options, method:"POST"})),
+  post: async (
+    endPoint: string,
+    options: RequestInit = {}
+  ): Promise<Response> =>
+    serverFetchHelper(endPoint, { ...options, method: "POST" }),
 
-    patch: async(endPoint:string, options:RequestInit = {}):Promise<Response>=> (serverFetchHelper(endPoint,{ ...options, method:"PATCH"})),
+  patch: async (
+    endPoint: string,
+    options: RequestInit = {}
+  ): Promise<Response> =>
+    serverFetchHelper(endPoint, { ...options, method: "PATCH" }),
 
-    put: async(endPoint:string, options:RequestInit = {}):Promise<Response>=> (serverFetchHelper(endPoint,{ ...options, method:"PUT"})),
-    
-    delete: async(endPoint:string, options:RequestInit = {}):Promise<Response>=> (serverFetchHelper(endPoint,{ ...options, method:"DELETE"})),
-}
+  put: async (endPoint: string, options: RequestInit = {}): Promise<Response> =>
+    serverFetchHelper(endPoint, { ...options, method: "PUT" }),
 
-
+  delete: async (
+    endPoint: string,
+    options: RequestInit = {}
+  ): Promise<Response> =>
+    serverFetchHelper(endPoint, { ...options, method: "DELETE" }),
+};
 
 // method: "POST",
 //       headers: {
