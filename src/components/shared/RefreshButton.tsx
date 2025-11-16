@@ -38,7 +38,7 @@ function RefreshButton({
       disabled={isPending}
     >
       <RefreshCcw
-        className={`h-4 w-4 ${isPending ? "animate-spin" : ""} ${
+        className={`h-4 w-4 cursor-pointer ${isPending ? "animate-spin" : ""} ${
           showlabel ? "mr-2" : ""
         }`}
       />

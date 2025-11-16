@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { serverFetch } from "@/lib/serverFetch"
 import { zodValidator } from "@/lib/zodValidator"
-import z, { json } from "zod"
+import z from "zod"
 
 const creatSpecialitiesZodSchema = z.object({
     title: z.string().min(3, "Title must be at least 3 character")

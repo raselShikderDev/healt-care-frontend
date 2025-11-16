@@ -8,11 +8,11 @@ export interface ManagmentHeaderProps {
   title: string;
   description?: string;
   action?: {
-    icon: LucideIcon;
+    icon?: LucideIcon;
     label: string;
     onclick: () => void;
   };
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 function ManagmentHeader({
@@ -23,7 +23,7 @@ function ManagmentHeader({
 }: ManagmentHeaderProps) {
   const Icon = action?.icon || Plus;
   return (
-    <div className="flex items-center justify-center ">
+    <div className="flex items-center justify-between ">
       <div>
         <h1 className="text-3xl font-bold">{title}</h1>
         {description && (
