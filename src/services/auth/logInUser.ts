@@ -13,8 +13,7 @@ import {
 import { setCookie } from "@/lib/tokenHandler";
 import { serverFetch } from "@/lib/serverFetch";
 import { zodValidator } from "@/lib/zodValidator";
-import { logInUserSchema } from "@/zod/auth";
-
+import { logInUserSchema } from "@/zod/auth.validation";
 
 export const logInUser = async (_currentState: any, formData: any) => {
   const redirectTo = formData.get("redirect");
@@ -27,21 +26,18 @@ export const logInUser = async (_currentState: any, formData: any) => {
     password: formData.get("password"),
   };
 
-
-
   if (zodValidator(signInData, logInUserSchema).success === false) {
-    return zodValidator(signInData, logInUserSchema)
+    return zodValidator(signInData, logInUserSchema);
   }
 
-  const validatedData = zodValidator(signInData, logInUserSchema).data
-
+  const validatedData = zodValidator(signInData, logInUserSchema).data;
 
   try {
     const res = await serverFetch.post(`/auth/login`, {
       body: JSON.stringify(validatedData),
-        headers: {
-                "Content-Type": "application/json",
-            }
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
     const data = await res.json();
 
@@ -74,16 +70,17 @@ export const logInUser = async (_currentState: any, formData: any) => {
       httpOnly: true,
       secure: true,
       path: accessTokenObject.path || "/",
-      maxAge: parseInt(accessTokenObject['Max-Age']) || 1000 * 60 * 60,
-      sameSite: accessTokenObject['SameSite']|| "none",
+      maxAge: parseInt(accessTokenObject["Max-Age"]) || 1000 * 60 * 60,
+      sameSite: accessTokenObject["SameSite"] || "none",
       // expires:accessTokenObject.Expires,
     });
     await setCookie("refreshToken", refreshTokenObject.refreshToken, {
       httpOnly: true,
       secure: true,
       path: refreshTokenObject.path || "/",
-      maxAge: parseInt(refreshTokenObject['Max-Age']) || 1000 * 60 * 60 * 24 * 30,
-      sameSite: refreshTokenObject['SameSite'] || "none",
+      maxAge:
+        parseInt(refreshTokenObject["Max-Age"]) || 1000 * 60 * 60 * 24 * 30,
+      sameSite: refreshTokenObject["SameSite"] || "none",
       // expires:refreshTokenObject.Expires,
     });
 
@@ -120,10 +117,11 @@ export const logInUser = async (_currentState: any, formData: any) => {
     console.error(error);
     return {
       success: false,
-      message: `${process.env.NODE_ENV === "development"
+      message: `${
+        process.env.NODE_ENV === "development"
           ? error.message
           : "Failed to login! you might have entered wrong credentials"
-        }`,
+      }`,
     };
   }
 };

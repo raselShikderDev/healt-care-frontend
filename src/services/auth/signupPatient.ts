@@ -5,9 +5,7 @@ import z from "zod";
 import { logInUser } from "./logInUser";
 import { serverFetch } from "@/lib/serverFetch";
 import { zodValidator } from "@/lib/zodValidator";
-import { signUpPatientValidationSchema } from "@/zod/auth";
-
-
+import { signUpPatientValidationSchema } from "@/zod/auth.validation";
 
 export const signupPatient = async (
   _currentState: any,
@@ -20,14 +18,19 @@ export const signupPatient = async (
       email: formData.get("email"),
       password: formData.get("password"),
       name: formData.get("name"),
-      confirmPassword: formData.get("confirmPassword")
+      confirmPassword: formData.get("confirmPassword"),
     };
 
-      if (zodValidator(paylaod, signUpPatientValidationSchema).success === false) {
-            return zodValidator(paylaod, signUpPatientValidationSchema)
-        }
+    if (
+      zodValidator(paylaod, signUpPatientValidationSchema).success === false
+    ) {
+      return zodValidator(paylaod, signUpPatientValidationSchema);
+    }
 
-        const validatedData:any = zodValidator(paylaod, signUpPatientValidationSchema).data
+    const validatedData: any = zodValidator(
+      paylaod,
+      signUpPatientValidationSchema
+    ).data;
 
     const signUpData = {
       patient: {
@@ -42,11 +45,9 @@ export const signupPatient = async (
     const newFormData = new FormData();
     newFormData.append("data", JSON.stringify(signUpData));
 
-    const res = await serverFetch.post(`/users/create-patient`,
-      {
-        body: newFormData,
-      }
-    );
+    const res = await serverFetch.post(`/users/create-patient`, {
+      body: newFormData,
+    });
 
     const data = await res.json();
 
@@ -61,10 +62,11 @@ export const signupPatient = async (
     console.error(error);
     return {
       success: false,
-      message: `${process.env.NODE_ENV === "development"
+      message: `${
+        process.env.NODE_ENV === "development"
           ? error.message
           : "SignUp failed! Please try again."
-        }`,
+      }`,
     };
   }
 };

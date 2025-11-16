@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { serverFetch } from "@/lib/serverFetch";
 import { zodValidator } from "@/lib/zodValidator";
-import { creatSpecialitiesZodSchema } from "@/zod/specilaties";
+import { creatSpecialitiesZodSchema } from "@/zod/specilaties.validation";
 
 
 export const getSpecilites = async () => {
