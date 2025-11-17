@@ -44,7 +44,7 @@ const SearchFilter = ({ placeholder = "Search...", paramName = "searchTerm" }: S
     return (
         <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input placeholder={placeholder} className="pl-10" value={value} disabled={isPending} onChange={(e) => e.target.value} />
+            <Input placeholder={placeholder} className="pl-10" value={value} disabled={isPending} onChange={(e) => setValue(e.target.value)} />
         </div>
     )
 }

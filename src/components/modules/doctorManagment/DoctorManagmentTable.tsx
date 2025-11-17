@@ -1,5 +1,13 @@
+import { ISpecilaties } from "@/types/specalities.interface"
 
-const DoctorManagmentTable = () => {
+
+interface IDoctorManagmentTableProps{
+  specialityResult:ISpecilaties[]
+}
+
+const DoctorManagmentTable = ({specialityResult}:IDoctorManagmentTableProps) => {
+  console.log(specialityResult);
+  
   return (
     <div>
       

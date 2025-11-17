@@ -52,4 +52,4 @@ const handleChange = (value:string) =>{
   )
 }
 
-export default 'SelectFilter'
+export default SelectFilter

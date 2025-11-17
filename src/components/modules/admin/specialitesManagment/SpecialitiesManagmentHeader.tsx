@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import ManagmentHeader from "@/components/shared/managmentHeader";
 import { Plus } from "lucide-react";
@@ -6,20 +6,20 @@ import { AddSpecilatiesForom } from "./AddSpecialitiesForm";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
-
 const SpecialitiesManagmentHeader = () => {
-    const router = useRouter()
-    const [, startTransition] = useTransition()
-    const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false)
+  const router = useRouter();
+  const [, startTransition] = useTransition();
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
-
-    const handleSuccess = ()=>{
-
-    }
+  const handleSuccess = () => {
+    startTransition(()=>{
+      router.refresh()
+    })
+  };
 
   return (
     <>
-    {/* <div className="flex justify-center items-center">
+      {/* <div className="flex justify-center items-center">
       <div>
         <h1 className="text-3xl font-bold">Specilaties Managment</h1>
         <p className="text-muted-foreground mt-1">
@@ -31,14 +31,20 @@ const SpecialitiesManagmentHeader = () => {
         Add Doctor
       </Button>
     </div> */}
-    <AddSpecilatiesForom open={isDialogOpen} onSuccess={handleSuccess} onClose={()=> setIsDialogOpen(false)} />
-    <ManagmentHeader title="Specilaties Managment" description="Managment specilaties information and details" action={{
-        label:"Specilaties Managment",
-        icon:Plus,
-        onclick:()=>setIsDialogOpen(true),
-    }}>
-      
-    </ManagmentHeader>
+      <AddSpecilatiesForom
+        open={isDialogOpen}
+        onSuccess={handleSuccess}
+        onClose={() => setIsDialogOpen(false)}
+      />
+      <ManagmentHeader
+        title="Specilaties Managment"
+        description="Managment specilaties information and details"
+        action={{
+          label: "Specilaties Managment",
+          icon: Plus,
+          onclick: () => setIsDialogOpen(true),
+        }}
+      ></ManagmentHeader>
     </>
   );
 };

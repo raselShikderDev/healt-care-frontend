@@ -1,3 +1,5 @@
+"use client"
+
 import InputFeildError from "@/components/shared/InputFeildError";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -13,7 +15,7 @@ import { toast } from "react-toastify";
 interface IDoctorFormDialogProps {
   open: boolean;
   onClose: () => void;
-  onScucess: () => void;
+  onSccucess: () => void;
   doctor?: IDoctor;
   specialites?: ISpecilaties[]
 }
@@ -21,7 +23,7 @@ interface IDoctorFormDialogProps {
 
 const DoctorFormDialog = ({ open,
   onClose,
-  onScucess,
+  onSccucess,
   doctor,
   specialites, }: IDoctorFormDialogProps) => {
   const isEdit = !!doctor
@@ -32,12 +34,12 @@ const DoctorFormDialog = ({ open,
   useEffect(() => {
     if (state && state?.success) {
       toast.success(state.message);
-      onScucess();
+      onSccucess();
       onClose();
     } else if (state && !state.success) {
       toast.error(state.message);
     }
-  }, [state, onScucess, onClose]);
+  }, [state, onSccucess, onClose]);
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
