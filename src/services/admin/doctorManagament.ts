@@ -130,9 +130,10 @@ export const updateDoctor = async (
 export const getDoctors = async (queryString?: string) => {
   try {
     const res = await serverFetch.post(
-      `/doctors${queryString ? `?${queryString}` : ""}`
+      `/doctors/${queryString ? `?${queryString}` : ""}`
     );
     const result = await res.json();
+    console.log({ doctos: result });
 
     return result;
   } catch (error: any) {

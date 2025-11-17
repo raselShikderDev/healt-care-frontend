@@ -6,6 +6,12 @@ const serverFetchHelper = async (
 ): Promise<Response> => {
   const { headers, ...restOptions } = options;
   const accessToken = await getCookie("accessToken");
+  
+  console.log({
+    "api url hitted": `${
+      process.env.NEXT_PUBLIC_BASE_URL as string
+    }${endpoint}`,
+  });
 
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL as string}${endpoint}`,
