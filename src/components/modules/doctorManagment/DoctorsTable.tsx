@@ -9,17 +9,28 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { softDeleteDoctor } from "@/services/admin/doctorManagament";
 import DoctorViewDetailDialog from "./DoctorViewDetaillsDialog";
+import DoctorFormDialog from "./DoctorFormDialog";
+import { ISpecilaties } from "@/types/specalities.interface";
+
+
+
 
 interface IDoctorTableProps {
   doctors?: IDoctor[];
+  specialities:ISpecilaties[]
 }
 
-const DoctorTable = ({ doctors }: IDoctorTableProps) => {
+
+
+const DoctorTable = ({ doctors,specialities }: IDoctorTableProps) => {
   const router = useRouter();
   const [, startTransition] = useTransition();
   const [deleteDoctor, setDeleteDoctor] = useState<IDoctor | null>(null);
   const [viewingDoctor, setViewingDoctor] = useState<IDoctor | null>(null);
+  const [editingDoctor, setEditingDoctor] = useState<IDoctor | null>(null);
   const [isDeletingDialog, setIsDeletingDialog] = useState<boolean>(false);
+
+
 
   const handleRefresh = () => {
     startTransition(() => {
@@ -27,19 +38,26 @@ const DoctorTable = ({ doctors }: IDoctorTableProps) => {
     });
   };
 
+
+
   const handleDelete = (doctor: IDoctor) => {
     console.log(`${doctor.name} is deleted`);
 
     setDeleteDoctor(doctor);
   };
 
+
+
   const handleEdit = (doctor: IDoctor) => {
-    console.log({doctor})
+    setEditingDoctor(doctor)
   };
+
+
 
   const handleView = (doctor: IDoctor) => {
     setViewingDoctor(doctor)
   };
+
 
 
   const onConfirmDelete = async () => {
@@ -59,6 +77,8 @@ const DoctorTable = ({ doctors }: IDoctorTableProps) => {
     }
   };
 
+
+
   return (
     <>
       <ManagmentTable
@@ -70,6 +90,11 @@ const DoctorTable = ({ doctors }: IDoctorTableProps) => {
         getRowKey={(doctor: IDoctor) => doctor.id!}
         emptyMessage="No doctor found"
       />
+      {/*  Edit doctor form */}
+      <DoctorFormDialog open={!!editingDoctor} specialites={specialities} onClose={() => setEditingDoctor(null)} onSccucess={() => {
+        setEditingDoctor(null);
+        handleRefresh();
+      }} />
       {/* View doctor details */}
       <DoctorViewDetailDialog open={!!viewingDoctor} onClose={() => setViewingDoctor(null)} doctor={viewingDoctor} />
       <DeleteConfirmationDialog

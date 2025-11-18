@@ -108,6 +108,9 @@ export const updateDoctor = async (
     }
 
     const res = await serverFetch.patch(`/doctors/${id}`, {
+      headers:{
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify(validatedPayload),
     });
 

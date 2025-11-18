@@ -29,7 +29,6 @@ const AdminDoctorManagmentPage = async ({
     <div className="space-y-6">
       <DoctorManagmentHeder
         specialities={specialityResult.data}
-        doctor={doctorResult.data}
       />
       <div className=" flex">
         <SearchFilter paramName="searchTerm" placeholder="Search Doctor..." />
@@ -44,7 +43,7 @@ const AdminDoctorManagmentPage = async ({
         <RefreshButton />
       </div>
       <Suspense fallback={<TableSceleton columns={10} rows={10} />}>
-        <DoctorTable doctors={doctorResult.data} />
+        <DoctorTable specialities={specialityResult?.data} doctors={doctorResult.data} />
         <TablePaggination
           currentPages={doctorResult?.meta?.page}
           totalPages={Math.ceil(

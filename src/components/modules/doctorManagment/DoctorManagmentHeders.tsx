@@ -9,11 +9,11 @@ import { IDoctor } from "@/types/doctor.interface";
 import { ISpecilaties } from "@/types/specalities.interface";
 
 interface IDoctorManagmentHeder{
-  doctor?:IDoctor;
+
   specialities?:ISpecilaties[]
 }
 
-const DoctorManagmentHeder = ({doctor, specialities}:IDoctorManagmentHeder) => {
+const DoctorManagmentHeder = ({ specialities}:IDoctorManagmentHeder) => {
   const router = useRouter();
   const [, startTransition] = useTransition();
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
@@ -30,7 +30,7 @@ const DoctorManagmentHeder = ({doctor, specialities}:IDoctorManagmentHeder) => {
         open={isDialogOpen}
         onSccucess={handleSuccess}
         onClose={() => setIsDialogOpen(false)}
-        doctor={doctor}
+    
         specialites={specialities}
       />
       <ManagmentHeader
