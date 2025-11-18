@@ -26,9 +26,9 @@ const TablePaggination = ({ currentPages, totalPages }: TablePagginationProps) =
         })
     }
 
-    if (totalPages === 0) {
-        return null
-    }
+    // if (totalPages === 0) {
+    //     return null
+    // }
 
     return (
         <div className="flex items-center justify-center gap-2">

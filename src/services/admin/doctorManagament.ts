@@ -129,7 +129,7 @@ export const updateDoctor = async (
 
 export const getDoctors = async (queryString?: string) => {
   try {
-    const res = await serverFetch.post(
+    const res = await serverFetch.get(
       `/doctors/${queryString ? `?${queryString}` : ""}`
     );
     const result = await res.json();
@@ -151,7 +151,7 @@ export const getDoctors = async (queryString?: string) => {
 
 export const getDoctorById = async (id: string) => {
   try {
-    const res = await serverFetch.post(`/doctors/${id}`);
+    const res = await serverFetch.get(`/doctors/${id}`);
     const result = await res.json();
 
     return result;

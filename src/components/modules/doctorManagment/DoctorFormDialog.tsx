@@ -1,11 +1,22 @@
-"use client"
+"use client";
 
 import InputFeildError from "@/components/shared/InputFeildError";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { createDoctor, updateDoctor } from "@/services/admin/doctorManagament";
 import { IDoctor } from "@/types/doctor.interface";
 import { ISpecilaties } from "@/types/specalities.interface";
@@ -17,19 +28,25 @@ interface IDoctorFormDialogProps {
   onClose: () => void;
   onSccucess: () => void;
   doctor?: IDoctor;
-  specialites?: ISpecilaties[]
+  specialites?: ISpecilaties[];
 }
 
-
-const DoctorFormDialog = ({ open,
+const DoctorFormDialog = ({
+  open,
   onClose,
   onSccucess,
   doctor,
-  specialites, }: IDoctorFormDialogProps) => {
-  const isEdit = !!doctor
+  specialites,
+}: IDoctorFormDialogProps) => {
+  const isEdit = !!doctor;
   const [selectedSpeciality, setSelectedSpeciality] = useState<string>("");
-  const [gender, setGender] = useState<"MALE" | "FEMALE">(doctor?.gender || "MALE")
-  const [state, formAction, pending] = useActionState(isEdit ? updateDoctor.bind(null, doctor.id!) : createDoctor, null)
+  const [gender, setGender] = useState<"MALE" | "FEMALE">(
+    doctor?.gender || "MALE"
+  );
+  const [state, formAction, pending] = useActionState(
+    isEdit ? updateDoctor.bind(null, doctor.id!) : createDoctor,
+    null
+  );
 
   useEffect(() => {
     if (state && state?.success) {
@@ -100,16 +117,25 @@ const DoctorFormDialog = ({ open,
             )}
             <Field>
               <FieldLabel htmlFor="specialities">Speciality</FieldLabel>
-              {/* <Input
+              <Input
                 id="specialities"
                 name="specialities"
                 placeholder="Select a speciality"
-                // defaultValue={isEdit ? doctor?.doctorSpecialties?.[0]?.specialties?.title : ""}
-                defaultValue={ }
+                defaultValue={selectedSpeciality}
+                // defaultValue={
+                //   isEdit
+                //     ? doctor?.doctorSpecialties?.[0]?.specialties?.title
+                //     : ""
+                // }
                 type="hidden"
-              /> */}
+              />
               <Select
-                value={isEdit ? doctor?.doctorSpecialties?.[0]?.specialties?.title || ""  : selectedSpeciality}
+                value={
+                  // isEdit
+                  //   ? doctor?.doctorSpecialties?.[0]?.specialties?.title || ""
+                  //   : selectedSpeciality
+                  selectedSpeciality
+                }
                 onValueChange={setSelectedSpeciality}
               >
                 <SelectTrigger>
@@ -257,7 +283,7 @@ const DoctorFormDialog = ({ open,
               <InputFeildError state={state} feild="designation" />
             </Field>
 
-            {!isEdit && ( 
+            {!isEdit && (
               <Field>
                 <FieldLabel htmlFor="file">Profile Photo</FieldLabel>
                 <Input id="file" name="file" type="file" accept="image/*" />
@@ -282,14 +308,14 @@ const DoctorFormDialog = ({ open,
               {pending
                 ? "Saving..."
                 : isEdit
-                  ? "Update Doctor"
-                  : "Create Doctor"}
+                ? "Update Doctor"
+                : "Create Doctor"}
             </Button>
           </div>
         </form>
       </DialogContent>
     </Dialog>
   );
-}
+};
 
-export default DoctorFormDialog
+export default DoctorFormDialog;

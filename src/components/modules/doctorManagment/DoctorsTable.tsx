@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { DeleteConfirmationDialog } from "@/components/shared/DeleteConfirmationDialog";
 import { IDoctor } from "@/types/doctor.interface";
@@ -9,17 +9,14 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { softDeleteDoctor } from "@/services/admin/doctorManagament";
 
-
-interface IDoctorTableProps{
-doctors?:IDoctor[]
+interface IDoctorTableProps {
+  doctors?: IDoctor[];
 }
 
-const DoctorTable = ({doctors}:IDoctorTableProps) => {
+const DoctorTable = ({ doctors }: IDoctorTableProps) => {
   const router = useRouter();
   const [, startTransition] = useTransition();
-  const [deleteDoctor, setDeleteDoctor] = useState<IDoctor | null>(
-    null
-  );
+  const [deleteDoctor, setDeleteDoctor] = useState<IDoctor | null>(null);
   const [isDeletingDialog, setIsDeletingDialog] = useState<boolean>(false);
 
   const handleRefresh = () => {
@@ -29,20 +26,14 @@ const DoctorTable = ({doctors}:IDoctorTableProps) => {
   };
 
   const handleDelete = (doctor: IDoctor) => {
+    console.log(`${doctor.name} is deleted`);
+
     setDeleteDoctor(doctor);
   };
 
-  const handleEdit =()=>{
+  const handleEdit = () => {};
 
-  }
-
-  
-
-  const handleView =()=>{
-
-  }
-
-  
+  const handleView = () => {};
 
   const onConfirmDelete = async () => {
     if (!deleteDoctor) {
@@ -69,7 +60,7 @@ const DoctorTable = ({doctors}:IDoctorTableProps) => {
         onEdit={handleEdit}
         onView={handleView}
         onDelete={handleDelete}
-        getRowKey={(doctor:IDoctor) => doctor.id!}
+        getRowKey={(doctor: IDoctor) => doctor.id!}
         emptyMessage="No doctor found"
       />
       <DeleteConfirmationDialog
@@ -82,6 +73,6 @@ const DoctorTable = ({doctors}:IDoctorTableProps) => {
       />
     </>
   );
-}
+};
 
-export default DoctorTable
+export default DoctorTable;

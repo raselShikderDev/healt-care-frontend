@@ -22,13 +22,13 @@ export const doctorsColumns: Column<IDoctor>[] = [
     header: "Specialties",
     accessor: (doctor) => (
       <div className="flex flex-wrap gap-1">
-        {doctor.doctorSpecialties && doctor.doctorSpecialties.length > 0 ? (
-          doctor.doctorSpecialties.map((specialty, index) => (
+        {doctor?.doctorSpecialties && doctor?.doctorSpecialties.length > 0 ? (
+          doctor?.doctorSpecialties?.map((specialty, index) => (
             <span
-              key={specialty.specialties?.id || index}
+              key={specialty?.specialties?.id || index}
               className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
             >
-              {specialty.specialties?.title || "N/A"}
+              {specialty?.specialties?.title || "N/A"}
             </span>
           ))
         ) : (
@@ -41,7 +41,7 @@ export const doctorsColumns: Column<IDoctor>[] = [
     header: "Contact",
     accessor: (doctor) => (
       <div className="flex flex-col">
-        <span className="text-sm">{doctor.contactNumber}</span>
+        <span className="text-sm">{doctor?.contactNumber}</span>
       </div>
     ),
   },
@@ -49,7 +49,7 @@ export const doctorsColumns: Column<IDoctor>[] = [
     header: "Experience",
     accessor: (doctor) => (
       <span className="text-sm font-medium">
-        {doctor.experience ?? 0} years
+        {doctor?.experience ?? 0} years
       </span>
     ),
   },
@@ -57,17 +57,17 @@ export const doctorsColumns: Column<IDoctor>[] = [
     header: "Fee",
     accessor: (doctor) => (
       <span className="text-sm font-semibold text-green-600">
-        ${doctor.appointmentFee}
+        ${doctor?.appointmentFee}
       </span>
     ),
   },
   {
     header: "Rating",
-    accessor: (doctor) => (
+    accessor: (doctor:IDoctor) => (
       <div className="flex items-center gap-1">
-        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+        <Star className="h-4 w-4 fill-yellow-300/80 text-yellow-300/80" />
         <span className="text-sm font-medium">
-          {doctor.averageRating!.toFixed(1)}
+          {doctor?.averageRating || "N/A"}
         </span>
       </div>
     ),
@@ -75,15 +75,15 @@ export const doctorsColumns: Column<IDoctor>[] = [
   {
     header: "Gender",
     accessor: (doctor) => (
-      <span className="text-sm capitalize">{doctor.gender.toLowerCase()}</span>
+      <span className="text-sm capitalize">{doctor?.gender?.toLowerCase()}</span>
     ),
   },
   {
     header: "Status",
-    accessor: (doctor) => <StatusBadgeCell isDeleted={doctor.isDeleted} />,
+    accessor: (doctor) => <StatusBadgeCell isDeleted={doctor?.isDeleted} />,
   },
   {
     header: "Joined",
-    accessor: (doctor) => <DateCell date={doctor.createdAt } />,
+    accessor: (doctor) => <DateCell date={doctor?.createdAt } />,
   },
 ];
