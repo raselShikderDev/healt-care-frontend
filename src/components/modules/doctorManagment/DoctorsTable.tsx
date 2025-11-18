@@ -8,6 +8,7 @@ import ManagmentTable from "@/components/shared/managmentTable";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { softDeleteDoctor } from "@/services/admin/doctorManagament";
+import DoctorViewDetailDialog from "./DoctorViewDetaillsDialog";
 
 interface IDoctorTableProps {
   doctors?: IDoctor[];
@@ -17,6 +18,7 @@ const DoctorTable = ({ doctors }: IDoctorTableProps) => {
   const router = useRouter();
   const [, startTransition] = useTransition();
   const [deleteDoctor, setDeleteDoctor] = useState<IDoctor | null>(null);
+  const [viewingDoctor, setViewingDoctor] = useState<IDoctor | null>(null);
   const [isDeletingDialog, setIsDeletingDialog] = useState<boolean>(false);
 
   const handleRefresh = () => {
@@ -31,9 +33,14 @@ const DoctorTable = ({ doctors }: IDoctorTableProps) => {
     setDeleteDoctor(doctor);
   };
 
-  const handleEdit = () => {};
+  const handleEdit = (doctor: IDoctor) => {
+    console.log({doctor})
+  };
 
-  const handleView = () => {};
+  const handleView = (doctor: IDoctor) => {
+    setViewingDoctor(doctor)
+  };
+
 
   const onConfirmDelete = async () => {
     if (!deleteDoctor) {
@@ -63,6 +70,8 @@ const DoctorTable = ({ doctors }: IDoctorTableProps) => {
         getRowKey={(doctor: IDoctor) => doctor.id!}
         emptyMessage="No doctor found"
       />
+      {/* View doctor details */}
+      <DoctorViewDetailDialog open={!!viewingDoctor} onClose={() => setViewingDoctor(null)} doctor={viewingDoctor} />
       <DeleteConfirmationDialog
         open={!!deleteDoctor}
         onClose={(open: boolean) => !open && setDeleteDoctor(null)}
