@@ -5,7 +5,7 @@ import TableSceleton from "@/components/shared/TableSceleton";
 import { getSpecilites } from "@/services/admin/specialitiesManagment";
 import { Suspense } from "react";
 
-const AdmnScheduleManagmentPage = async () => {
+const AdminSpecialityManagmentPage = async () => {
   const result = await getSpecilites();
   return (
     <div className="space-y-6">
@@ -20,4 +20,4 @@ const AdmnScheduleManagmentPage = async () => {
   );
 };
 
-export default AdmnScheduleManagmentPage;
+export default AdminSpecialityManagmentPage;

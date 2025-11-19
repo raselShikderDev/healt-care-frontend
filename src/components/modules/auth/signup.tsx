@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff, Lock } from "lucide-react";
-import { useActionState, useEffect, useState } from "react";
+import React, { useActionState, useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Field,
@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/field";
 import { signupPatient } from "@/services/auth/signupPatient";
 import { toast } from "react-toastify";
+import getInputFeildError from "@/lib/getInputFeildError";
+import InputFeildError from "@/components/shared/InputFeildError";
 
 export default function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
@@ -23,20 +25,7 @@ export default function SignUp() {
   const [state, formActoin, isPending] = useActionState(signupPatient, null);
   console.log(state);
 
-  const getFeildError = (feildName: string) => {
-    if (state && state.errors) {
-      const error = state?.errors.find((err: any) => err.feild === feildName);
-      if (error) {
-        console.log(error?.message);
 
-        return error?.message;
-      } else {
-        return null;
-      }
-    } else {
-      return null;
-    }
-  };
 
   useEffect(() => {
       if (state && !state.success && state.message) {
@@ -54,11 +43,12 @@ export default function SignUp() {
         <Field>
           <FieldLabel htmlFor="name">Full Name</FieldLabel>
           <Input id="name" name="name" type="text" placeholder="John Doe" />
-          {getFeildError("name") && (
+          {/* {getInputFeildError("name", state) && (
             <FieldDescription className="text-red-600">
-              error {getFeildError("name")}
+              error {getInputFeildError("name", state)}
             </FieldDescription>
-          )}
+          )} */}
+          <InputFeildError feild="name" state={state} />
         </Field>
 
         <Field>
@@ -69,11 +59,8 @@ export default function SignUp() {
             type="email"
             placeholder="m@example.com"
           />
-          {getFeildError("email") && (
-            <FieldDescription className="text-red-600">
-              error {getFeildError("email")}
-            </FieldDescription>
-          )}
+         
+          <InputFeildError feild="email" state={state} />
         </Field>
 
         {/* Password Field */}
@@ -97,11 +84,7 @@ export default function SignUp() {
               {showPassword ? <EyeOff /> : <Eye />}
             </Button>
           </div>
-          {getFeildError("password") && (
-            <FieldDescription className="text-red-600">
-              error {getFeildError("password")}
-            </FieldDescription>
-          )}
+          <InputFeildError feild="password" state={state} />
         </Field>
 
         {/* Confirm Password Field */}
@@ -125,11 +108,12 @@ export default function SignUp() {
               {confirmShowPassword ? <EyeOff /> : <Eye />}
             </Button>
           </div>
-          {getFeildError("confirmPassword") && (
+          {/* {getInputFeildError("confirmPassword", state) && (
             <FieldDescription className="text-red-600">
-              error {getFeildError("confirmPassword")}
+              error {getInputFeildError("confirmPassword", state)}
             </FieldDescription>
-          )}
+          )} */}
+          <InputFeildError feild="confirmPassword" state={state} />
         </Field>
 
         <FieldGroup>
