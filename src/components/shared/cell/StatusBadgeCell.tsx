@@ -9,7 +9,7 @@ interface IStatusBadgeCellProps {
 const StatusBadgeCell = ({
   isDeleted,
   activeText = "Active",
-  deletedText = "Deleted",
+  deletedText = "Disabled",
 }: IStatusBadgeCellProps) => {
   return (
     <Badge variant={isDeleted ? "destructive" : "default"}>

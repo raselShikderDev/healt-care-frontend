@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 
-import z from "zod";
 import { parse } from "cookie";
 import { redirect } from "next/navigation";
 import jwt, { JwtPayload } from "jsonwebtoken";
@@ -40,8 +39,10 @@ export const logInUser = async (_currentState: any, formData: any) => {
       },
     });
     const data = await res.json();
+    console.log({ data });
 
     const setCookieHeader = res.headers.getSetCookie();
+    console.log({ setCookieHeader });
 
     if (setCookieHeader && setCookieHeader.length > 0) {
       setCookieHeader.forEach((cookie: string) => {

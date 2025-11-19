@@ -43,11 +43,11 @@ const AdminDoctorManagmentPage = async ({
         <RefreshButton />
       </div>
       <Suspense fallback={<TableSceleton columns={10} rows={10} />}>
-        <DoctorTable specialities={specialityResult?.data} doctors={doctorResult.data} />
+        <DoctorTable specialities={specialityResult?.data} doctors={doctorResult?.data} />
         <TablePaggination
           currentPages={doctorResult?.meta?.page}
           totalPages={Math.ceil(
-            doctorResult.meta?.total / doctorResult?.meta.limit
+            doctorResult?.meta?.total / doctorResult?.meta?.limit
           )}
         />
       </Suspense>
