@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import InputFeildError from "@/components/shared/InputFeildError";
 import { Button } from "@/components/ui/button";
@@ -72,16 +72,18 @@ export function AddSpecilatiesForom({
               </Field>
             </div>
           </div>
-          <DialogFooter>
+          <DialogFooter className="mt-3">
             <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
+              <Button className="cursor-pointer" variant="outline">
+                Cancel
+              </Button>
             </DialogClose>
             <Button
               className="cursor-pointer"
               disabled={isPending}
               type="submit"
             >
-              Save changes
+              Create Specilaties
             </Button>
           </DialogFooter>
         </form>

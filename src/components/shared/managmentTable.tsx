@@ -109,25 +109,25 @@ function ManagmentTable<T>({
                               <MoreHorizontal className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent className="cursor-pointer" align="end">
+                          <DropdownMenuContent align="end">
                             {onView && (
-                              <DropdownMenuItem onClick={() => onView(item)}>
-                                <Eye className="mr-2 h-4 w-4 cursor-pointer" />
+                              <DropdownMenuItem className="cursor-pointer" onClick={() => onView(item)}>
+                                <Eye className="mr-2 h-4 w-4" />
                                 View
                               </DropdownMenuItem>
                             )}
                             {onEdit && (
-                              <DropdownMenuItem onClick={() => onEdit(item)}>
-                                <Edit className="mr-2 h-4 w-4 cursor-pointer" />
+                              <DropdownMenuItem className="cursor-pointer" onClick={() => onEdit(item)}>
+                                <Edit className="mr-2 h-4 w-4" />
                                 Edit
                               </DropdownMenuItem>
                             )}
                             {onDelete && (
                               <DropdownMenuItem
                                 onClick={() => onDelete(item)}
-                                className="text-destructive"
+                                className="text-destructive cursor-pointer"
                               >
-                                <Trash className="mr-2 h-4 w-4 cursor-pointer" />
+                                <Trash className="mr-2 h-4 w-4" />
                                 Delete
                               </DropdownMenuItem>
                             )}
