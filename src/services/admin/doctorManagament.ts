@@ -25,8 +25,6 @@ export const createDoctor = async (_prevState: any, formData: FormData) => {
     const experienceValue = formData.get("experience");
     const appointmentFeeValue = formData.get("appointmentFee");
   
-  
-  try {
     const validationPayload: IDoctor = {
        name: formData.get("name") as string,
         email: formData.get("email") as string,
@@ -62,10 +60,6 @@ export const createDoctor = async (_prevState: any, formData: FormData) => {
       }
     }
 
-
-
-  
-
     const backendPayload = {
        password: validatedPayload.data.password,
         doctor: {
@@ -89,6 +83,10 @@ export const createDoctor = async (_prevState: any, formData: FormData) => {
     if (formData.get("file")) {
       newFormData.append("file", formData.get("file") as Blob);
     }
+  
+  try {
+
+    
 
     const res = await serverFetch.post("/users/create-doctor", {
       body: newFormData,
@@ -106,6 +104,7 @@ export const createDoctor = async (_prevState: any, formData: FormData) => {
           ? error.message
           : "Something went wrong"
       }`,
+      formData:validatedPayload.data
     };
   }
 };
@@ -154,10 +153,9 @@ export const updateDoctor = async (
     return {
       success: false,
       message: `${
-        process.env.NODE_ENV === "development"
-          ? error.message
-          : "Something went wrong"
-      }`,
+        process.env.NODE_ENV === "development" ? error.message
+          : "Something went wrong" }`,
+
     };
   }
 };
