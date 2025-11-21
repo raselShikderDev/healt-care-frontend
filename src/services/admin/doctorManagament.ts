@@ -9,16 +9,17 @@ import {
 } from "@/zod/doctor.validation";
 
 export const createDoctor = async (_prevState: any, formData: FormData) => {
-
-  const specialtiesString = formData.get("specialties") as string
-  let specialties: string[] = []
+  const specialtiesString = formData.get("specialties") as string;
+  let specialties: string[] = [];
 
   if (specialtiesString) {
     try {
-      specialties = JSON.parse(specialtiesString)
-      if (!Array.isArray(specialties)) specialties = []
+      specialties = JSON.parse(specialtiesString);
+      if (!Array.isArray(specialties)) specialties = [];
     } catch (error) {
-      specialties = []
+      console.log(error);
+      
+      specialties = [];
     }
   }
 
@@ -42,7 +43,10 @@ export const createDoctor = async (_prevState: any, formData: FormData) => {
     profilePhoto: formData.get("file") as File,
   };
 
-  const validatedPayload = zodValidator(validationPayload, createDoctorZodSchema);
+  const validatedPayload = zodValidator(
+    validationPayload,
+    createDoctorZodSchema
+  );
 
   if (!validatedPayload.success && validatedPayload.errors) {
     return {
@@ -50,14 +54,14 @@ export const createDoctor = async (_prevState: any, formData: FormData) => {
       message: "Validation error",
       formData: validatedPayload,
       errors: validatedPayload.errors,
-    }
+    };
   }
   if (!validatedPayload.data) {
     return {
       success: validatedPayload.success,
       message: "Validation error",
       formData: validatedPayload,
-    }
+    };
   }
 
   const backendPayload = {
@@ -75,7 +79,7 @@ export const createDoctor = async (_prevState: any, formData: FormData) => {
       currentWorkingPlace: validatedPayload.data.currentWorkingPlace,
       designation: validatedPayload.data.designation,
       specialties: validatedPayload.data.specialties,
-    }
+    },
   };
 
   const newFormData = new FormData();
@@ -85,9 +89,6 @@ export const createDoctor = async (_prevState: any, formData: FormData) => {
   }
 
   try {
-
-
-
     const res = await serverFetch.post("/users/create-doctor", {
       body: newFormData,
     });
@@ -99,11 +100,12 @@ export const createDoctor = async (_prevState: any, formData: FormData) => {
     console.log(error);
     return {
       success: false,
-      message: `${process.env.NODE_ENV === "development"
+      message: `${
+        process.env.NODE_ENV === "development"
           ? error.message
           : "Something went wrong"
-        }`,
-      formData: validatedPayload.data
+      }`,
+      formData: validatedPayload.data,
     };
   }
 };
@@ -113,10 +115,8 @@ export const updateDoctor = async (
   _prevState: any,
   formData: FormData
 ) => {
-
   const experienceValue = formData.get("experience");
   const appointmentFeeValue = formData.get("appointmentFee");
-
 
   const validationPayload: Partial<IDoctor> = {
     name: formData.get("name") as string,
@@ -156,7 +156,10 @@ export const updateDoctor = async (
       // Ignore invalid JSON
     }
   }
-  const validatedPayload = zodValidator(validationPayload, updateDoctorZodSchema);
+  const validatedPayload = zodValidator(
+    validationPayload,
+    updateDoctorZodSchema
+  );
 
   if (!validatedPayload.success && validatedPayload.errors) {
     return {
@@ -164,7 +167,7 @@ export const updateDoctor = async (
       message: "Validation failed",
       formData: validationPayload,
       errors: validatedPayload.errors,
-    }
+    };
   }
 
   if (!validatedPayload.data) {
@@ -172,16 +175,13 @@ export const updateDoctor = async (
       success: false,
       message: "Validation failed",
       formData: validationPayload,
-    }
+    };
   }
 
-  
   try {
-
-
     const res = await serverFetch.patch(`/doctors/${id}`, {
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(validatedPayload),
     });
@@ -193,9 +193,12 @@ export const updateDoctor = async (
     console.log(error);
     return {
       success: false,
-      message: `${process.env.NODE_ENV === "development" ? error.message
-          : "Something went wrong"}`,
-
+      message: `${
+        process.env.NODE_ENV === "development"
+          ? error.message
+          : "Something went wrong"
+      }`,
+      formData: validationPayload,
     };
   }
 };
@@ -213,10 +216,11 @@ export const getDoctors = async (queryString?: string) => {
     console.log(error);
     return {
       success: false,
-      message: `${process.env.NODE_ENV === "development"
+      message: `${
+        process.env.NODE_ENV === "development"
           ? error.message
           : "Something went wrong"
-        }`,
+      }`,
     };
   }
 };
@@ -231,10 +235,11 @@ export const getDoctorById = async (id: string) => {
     console.log(error);
     return {
       success: false,
-      message: `${process.env.NODE_ENV === "development"
+      message: `${
+        process.env.NODE_ENV === "development"
           ? error.message
           : "Something went wrong"
-        }`,
+      }`,
     };
   }
 };
@@ -249,10 +254,11 @@ export const deleteDoctor = async (id: string) => {
     console.log(error);
     return {
       success: false,
-      message: `${process.env.NODE_ENV === "development"
+      message: `${
+        process.env.NODE_ENV === "development"
           ? error.message
           : "Something went wrong"
-        }`,
+      }`,
     };
   }
 };
@@ -267,10 +273,11 @@ export const softDeleteDoctor = async (id: string) => {
     console.log(error);
     return {
       success: false,
-      message: `${process.env.NODE_ENV === "development"
+      message: `${
+        process.env.NODE_ENV === "development"
           ? error.message
           : "Something went wrong"
-        }`,
+      }`,
     };
   }
 };
