@@ -28,7 +28,7 @@ const AdminDoctorManagmentPage = async ({
   return (
     <div className="space-y-6">
       <DoctorManagmentHeder
-        specialities={specialityResult.data}
+        specialities={specialityResult?.data}
       />
       <div className=" flex">
         <SearchFilter paramName="searchTerm" placeholder="Search Doctor..." />
@@ -36,8 +36,8 @@ const AdminDoctorManagmentPage = async ({
           paramName="ALL"
           placheholder="Filter by Speciality"
           options={specialityResult?.data?.map((speciality: ISpecilaties) => ({
-            label: speciality.title,
-            value: speciality.id,
+            label: speciality?.title,
+            value: speciality?.id,
           }))}
         />
         <RefreshButton />
