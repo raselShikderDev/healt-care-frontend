@@ -6,12 +6,14 @@ const serverFetchHelper = async (
 ): Promise<Response> => {
   const { headers, ...restOptions } = options;
   const accessToken = await getCookie("accessToken");
-  
+
   console.log({
     "api url hitted": `${
       process.env.NEXT_PUBLIC_BASE_URL as string
     }${endpoint}`,
   });
+  console.log({ headers: { ...headers } });
+  console.log({ restOptions: { ...restOptions } });
 
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL as string}${endpoint}`,
@@ -23,9 +25,11 @@ const serverFetchHelper = async (
         Cookie: accessToken ? `accessToken=${accessToken}` : "",
       },
       ...restOptions,
-      credentials: "include",
+      // credentials: "include",
     }
   );
+
+  console.log({ response });
 
   return response;
 };
