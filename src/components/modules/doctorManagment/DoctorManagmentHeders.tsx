@@ -5,7 +5,6 @@ import { Plus } from "lucide-react";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import DoctorFormDialog from "./DoctorFormDialog";
-import { IDoctor } from "@/types/doctor.interface";
 import { ISpecilaties } from "@/types/specalities.interface";
 
 interface IDoctorManagmentHeder{
@@ -17,12 +16,19 @@ const DoctorManagmentHeder = ({ specialities}:IDoctorManagmentHeder) => {
   const router = useRouter();
   const [, startTransition] = useTransition();
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [dialogKey, setDialogKey] = useState<number>(0);
 
   const handleSuccess = () => {
     startTransition(()=>{
       router.refresh()
     })
   };
+
+  const handleOpenDialog =()=>{
+    setDialogKey((prev)=>prev + 1)
+    setIsDialogOpen(true)
+  }
 
   return (
     <>
@@ -39,7 +45,7 @@ const DoctorManagmentHeder = ({ specialities}:IDoctorManagmentHeder) => {
         action={{
           label: "Doctor Managment",
           icon: Plus,
-          onclick: () => setIsDialogOpen(true),
+          onclick: handleOpenDialog,
         }}
       ></ManagmentHeader>
     </>
