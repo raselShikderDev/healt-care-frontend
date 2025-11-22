@@ -1,13 +1,12 @@
 import { getUserInfo } from "@/services/auth/getUserInfo";
 import DashBoardSidebarContent from "./DashBoardSidebarContent";
-import { IUserInfo } from "@/types/user.interface";
 import { getDefaultDashboard } from "@/lib/authUtils";
 import { NavSection } from "@/types/dashboard.interface";
 import { getNavItemsByRole } from "@/lib/navItems.config";
+import { IUser } from "@/types/types";
 
 const DashboardSidebar = async () => {
-  const userInfo = (await getUserInfo()) as IUserInfo;
-  console.log({ userInfo });
+  const userInfo = (await getUserInfo()) as IUser;
 
   const dashboardHome = getDefaultDashboard(userInfo.role);
   const navItems: NavSection[] = getNavItemsByRole(userInfo.role);

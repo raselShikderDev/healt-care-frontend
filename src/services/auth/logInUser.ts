@@ -12,7 +12,7 @@ import {
 import { setCookie } from "@/lib/tokenHandler";
 import { serverFetch } from "@/lib/serverFetch";
 import { zodValidator } from "@/lib/zodValidator";
-import { logInUserSchema } from "@/zod/auth.validation";
+import { loginValidationZodSchema } from "@/zod/auth.validation";
 
 export const logInUser = async (_currentState: any, formData: any) => {
   const redirectTo = formData.get("redirect");
@@ -25,11 +25,11 @@ export const logInUser = async (_currentState: any, formData: any) => {
     password: formData.get("password"),
   };
 
-  if (zodValidator(signInData, logInUserSchema).success === false) {
-    return zodValidator(signInData, logInUserSchema);
+  if (zodValidator(signInData, loginValidationZodSchema).success === false) {
+    return zodValidator(signInData, loginValidationZodSchema);
   }
 
-  const validatedData = zodValidator(signInData, logInUserSchema).data;
+  const validatedData = zodValidator(signInData, loginValidationZodSchema).data;
 
   try {
     const res = await serverFetch.post(`/auth/login`, {
@@ -100,6 +100,9 @@ export const logInUser = async (_currentState: any, formData: any) => {
       throw new Error(data.message || "Login failed");
     }
     console.log({ data });
+
+    console.log(`${getDefaultDashboard(userRole as UserRole)}?loggedIn=true`)
+
 
     if (redirectTo) {
       const requestedPath = redirectTo.toString();

@@ -20,8 +20,8 @@ import { ComponentProps } from "react";
 import LogoutButton from "./logoutButton";
 import LogoutButtonMobile from "./logoutButtonMobile";
 import { getUserInfo } from "@/services/auth/getUserInfo";
-import { IUserInfo } from "@/types/user.interface";
 import { getDefaultDashboard } from "@/lib/authUtils";
+import { UserInfo } from "@/types/user.interface";
 
 const PublicNavbar = async (props: ComponentProps<typeof NavigationMenu>) => {
   const navItems = [
@@ -32,7 +32,7 @@ const PublicNavbar = async (props: ComponentProps<typeof NavigationMenu>) => {
     { name: "NGOs", href: "/ngo", role: "PUBLIC" },
   ];
 
-  const userInfo = (await getUserInfo()) as IUserInfo;
+  const userInfo = (await getUserInfo()) as UserInfo;
   const dashboardHome = getDefaultDashboard(userInfo?.role);
 
   if (userInfo && userInfo?.role) {

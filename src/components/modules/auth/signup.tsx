@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/field";
 import { signupPatient } from "@/services/auth/signupPatient";
 import { toast } from "react-toastify";
-import getInputFeildError from "@/lib/getInputFeildError";
 import InputFeildError from "@/components/shared/InputFeildError";
 
 export default function SignUp() {
@@ -23,7 +22,6 @@ export default function SignUp() {
   const [confirmShowPassword, setConfirmShowPassword] = useState(false);
 
   const [state, formActoin, isPending] = useActionState(signupPatient, null);
-  console.log(state);
 
 
 

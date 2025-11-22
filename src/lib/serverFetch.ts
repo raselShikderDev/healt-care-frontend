@@ -12,7 +12,6 @@ const serverFetchHelper = async (
       process.env.NEXT_PUBLIC_BASE_URL as string
     }${endpoint}`,
   });
-  console.log({ headers: { ...headers } });
   console.log({ restOptions: { ...restOptions } });
 
   const response = await fetch(
@@ -25,11 +24,11 @@ const serverFetchHelper = async (
         Cookie: accessToken ? `accessToken=${accessToken}` : "",
       },
       ...restOptions,
-      // credentials: "include",
+      credentials: "include",
     }
   );
 
-  console.log({ response });
+  // console.log({ response: await response.json() });
 
   return response;
 };

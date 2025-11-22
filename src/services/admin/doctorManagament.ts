@@ -209,7 +209,6 @@ export const getDoctors = async (queryString?: string) => {
       `/doctors/${queryString ? `?${queryString}` : ""}`
     );
     const result = await res.json();
-    console.log({ doctos: result });
 
     return result;
   } catch (error: any) {
