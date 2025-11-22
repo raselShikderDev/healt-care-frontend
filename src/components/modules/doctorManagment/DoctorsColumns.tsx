@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import DateCell from "@/components/shared/cell/DateCell";
@@ -17,12 +18,13 @@ export const doctorsColumns: Column<IDoctor>[] = [
         photo={doctor.profilePhoto as string}
       />
     ),
+    sortkey:"name",
   },
   {
     header: "Specialties",
     accessor: (doctor) => {
       // Handle both possible response structures
-      const specialties: any = doctor.doctorSpecialties;
+      const specialties: any = doctor?.doctorSpecialties;
 
       if (!specialties || specialties.length === 0) {
         return <span className="text-xs text-gray-500">No specialties</span>;
@@ -30,11 +32,11 @@ export const doctorsColumns: Column<IDoctor>[] = [
 
       return (
         <div className="flex flex-wrap gap-1">
-          {specialties.map((item: any, index: any) => {
+          {specialties?.map((item: any, index: any) => {
             // Handle nested specialty object
-            const specialtyTitle = item.specialities?.title || "N/A";
+            const specialtyTitle = item?.specialities?.title || "N/A";
             const specialtyId =
-              item.specialties?.id || item.specialitiesId || index;
+              item.specialties?.id || item?.specialitiesId || index;
 
             return (
               <span
@@ -64,6 +66,7 @@ export const doctorsColumns: Column<IDoctor>[] = [
         {doctor?.experience ?? 0} years
       </span>
     ),
+    sortkey:"experience",
   },
   {
     header: "Fee",
@@ -72,6 +75,7 @@ export const doctorsColumns: Column<IDoctor>[] = [
         ${doctor?.appointmentFee}
       </span>
     ),
+    sortkey:"appointmentFee",
   },
   {
     header: "Rating",
@@ -83,6 +87,7 @@ export const doctorsColumns: Column<IDoctor>[] = [
         </span>
       </div>
     ),
+    sortkey:"averageRating",
   },
   {
     header: "Gender",
