@@ -91,6 +91,7 @@ function ManagmentTable<T>({
     );
   };
   
+console.log({data});
 
   return (
     <>

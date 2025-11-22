@@ -9,7 +9,6 @@ const SuccessLogoutToast = () => {
   const router = useRouter();
 
   useEffect(() => {
-    console.log();
     if (searchParams.get("logout") === "true") {
       toast.success("You have been successfully Logout");
 

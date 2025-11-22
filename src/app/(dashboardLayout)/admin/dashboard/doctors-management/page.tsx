@@ -19,22 +19,25 @@ const AdminDoctorManagmentPage = async ({
 
   const specialityResult = await getSpecilites();
   const doctorResult = await getDoctors(queryString);
-  console.log({ doctorResult: doctorResult.data });
-  console.log({ specialityResult: specialityResult.data });
+  console.log({ doctorResult });
 
   return (
     <div className="space-y-6">
-      <DoctorManagmentHeder
-        specialities={specialityResult?.data || []}
-      />
-      <DoctorFilters specialties={specialityResult?.data || []}/>
+      <DoctorManagmentHeder specialities={specialityResult?.data || []} />
+      <DoctorFilters specialties={specialityResult?.data || []} />
       <Suspense fallback={<TableSceleton columns={10} rows={10} />}>
-        <DoctorTable specialities={specialityResult?.data} doctors={doctorResult?.data || []} />
+        <DoctorTable
+          specialities={specialityResult?.data}
+          doctors={doctorResult?.data || []}
+        />
         <TablePaggination
-          currentPages={doctorResult?.meta?.page || 1} 
-          totalPages={Math.ceil(
-           ( doctorResult?.meta?.total || 1) / (doctorResult?.meta?.limit || 1)
-          ) || 1}
+          currentPages={doctorResult?.meta?.page || 1}
+          totalPages={
+            Math.ceil(
+              (doctorResult?.meta?.total || 1) /
+                (doctorResult?.meta?.limit || 1)
+            ) || 1
+          }
         />
       </Suspense>
     </div>

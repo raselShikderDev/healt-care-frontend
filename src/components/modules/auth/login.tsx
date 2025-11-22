@@ -19,7 +19,6 @@ export default function LoginForm({ redirect }: { redirect?: string }) {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [state, formActoin, isPending] = useActionState(logInUser, null);
  
-console.log({state});
 
 
 
