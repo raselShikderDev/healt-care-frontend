@@ -9,12 +9,13 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 export const getUserInfo = async (): Promise<UserInfo | any> => {
   let userInfo: UserInfo | any;
   try {
-    const response = await serverFetch.get("/users/my-profile", {
+    const response = await serverFetch.get("/auth/me", {
       cache: "force-cache",
       next: { tags: ["user-info"] },
     });
 
     const result = await response.json();
+    console.log({ result });
 
     if (result.success) {
       const accessToken = await getCookie("accessToken");
