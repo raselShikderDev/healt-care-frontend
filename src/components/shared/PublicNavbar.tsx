@@ -33,9 +33,10 @@ const PublicNavbar = async (props: ComponentProps<typeof NavigationMenu>) => {
   ];
 
   const userInfo = (await getUserInfo()) as UserInfo;
-  const dashboardHome = getDefaultDashboard(userInfo?.role);
+  let dashboardHome;
 
   if (userInfo && userInfo?.role) {
+    dashboardHome = getDefaultDashboard(userInfo?.role);
     navItems.push({
       name: "Dashboard",
       href: `/${dashboardHome.toLowerCase()}`,

@@ -1,6 +1,15 @@
-"use client"
+"use client";
 
-import { ArrowDown, ArrowUp, ArrowUpDown, Edit, Eye, Loader2, MoreHorizontal, Trash } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
+  Edit,
+  Eye,
+  Loader2,
+  MoreHorizontal,
+  Trash,
+} from "lucide-react";
 import React, { useTransition } from "react";
 import {
   Table,
@@ -47,8 +56,8 @@ function ManagmentTable<T>({
   emptyMessage = "No records found",
   isRefreshing = false,
 }: ManagmentTAbleProps<T>) {
-  
   const hasActions = onDelete || onEdit || onView;
+  console.log(hasActions);
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -90,8 +99,14 @@ function ManagmentTable<T>({
       <ArrowDown className="ml-2 h-4 w-4" />
     );
   };
-  
-console.log({data});
+
+  const handleEdit = (item: T) => {
+    console.log({ item });
+
+    if (onEdit) onEdit(item);
+  };
+
+  console.log({ data });
 
   return (
     <>
@@ -164,13 +179,19 @@ console.log({data});
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             {onView && (
-                              <DropdownMenuItem className="cursor-pointer" onClick={() => onView(item)}>
+                              <DropdownMenuItem
+                                className="cursor-pointer"
+                                onClick={() => onView(item)}
+                              >
                                 <Eye className="mr-2 h-4 w-4" />
                                 View
                               </DropdownMenuItem>
                             )}
                             {onEdit && (
-                              <DropdownMenuItem className="cursor-pointer" onClick={() => onEdit(item)}>
+                              <DropdownMenuItem
+                                className="cursor-pointer"
+                                onClick={() => handleEdit(item)}
+                              >
                                 <Edit className="mr-2 h-4 w-4" />
                                 Edit
                               </DropdownMenuItem>

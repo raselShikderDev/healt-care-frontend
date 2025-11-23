@@ -41,7 +41,10 @@ const DoctorFormDialog = ({
   doctor,
   specialites,
 }: IDoctorFormDialogProps) => {
+  const formRef = useRef<HTMLFormElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const isEdit = !!doctor;
+
   const [gender, setGender] = useState<"MALE" | "FEMALE">(
     doctor?.gender || "MALE"
   );
@@ -53,21 +56,10 @@ const DoctorFormDialog = ({
     setSelectedFile(file || null);
   };
 
-  const formRef = useRef<HTMLFormElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const specialtySelection = useSpecialtySelection({
-    doctor,
-    isEdit,
-    open,
-  });
-
   const [state, formAction, pending] = useActionState(
     isEdit ? updateDoctor.bind(null, doctor.id!) : createDoctor,
     null
   );
-
-  console.log({ state });
 
   const handleClose = () => {
     if (fileInputRef.current) {
@@ -80,22 +72,27 @@ const DoctorFormDialog = ({
     onClose(); // Close dialog
   };
 
+  const specialtySelection = useSpecialtySelection({
+    doctor,
+    isEdit,
+    open,
+  });
+
   const getSpecialtyTitle = (id: string): string => {
     return specialites?.find((s) => s.id === id)?.title || "Unknown";
   };
 
   useEffect(() => {
-    if (state && state?.success) {
+    if (state?.success) {
       toast.success(state.message);
       if (formRef.current) {
         formRef.current.reset();
       }
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setSelectedFile(null);
       onSccucess();
       onClose();
     } else if (state && !state.success) {
       toast.error(state.message);
+
       if (selectedFile && fileInputRef.current) {
         const dataTransfer = new DataTransfer();
         dataTransfer.items.add(selectedFile);
@@ -103,7 +100,7 @@ const DoctorFormDialog = ({
       }
     }
   }, [state, onSccucess, onClose, selectedFile]);
-  console.log({isEdit});
+  console.log({ isEdit });
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
@@ -383,10 +380,11 @@ const DoctorFormDialog = ({
               variant="outline"
               onClick={onClose}
               disabled={pending}
+              className="cursor-pointer"
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={pending}>
+            <Button className="cursor-pointer" type="submit" disabled={pending}>
               {pending
                 ? "Saving..."
                 : isEdit
