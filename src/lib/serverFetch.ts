@@ -17,14 +17,14 @@ const serverFetchHelper = async (
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL as string}${endpoint}`,
     {
+      credentials: "include",
       headers: {
-        ...headers,
         // ...(accessToken ? { "Authorization": `Bearer ${accessToken}` } : {}),
         // ...(accessToken ? { "Authorization": accessToken } : {}),
         Cookie: accessToken ? `accessToken=${accessToken}` : "",
+        ...headers,
       },
       ...restOptions,
-      credentials: "include",
     }
   );
 

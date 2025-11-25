@@ -3,10 +3,29 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import { getDefaultDashboard, getRouteOwner, isAuthRoute, UserRole } from "./lib/authUtils";
 import { deleteCookie } from "./lib/tokenHandler";
 import { getUserInfo } from "./services/auth/getUserInfo";
+import { getNewAccessToken } from "./services/auth/auth.service";
 
 
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
+
+  const hasTokenRefreshedParams = request.nextUrl.searchParams.has("tokenRefreshed")
+
+  // If coming back after token refresh, remove the paran and continue
+  if (hasTokenRefreshedParams) {
+    const url = request.nextUrl.clone();
+    url.searchParams.delete("tokenRefreshed")
+    return NextResponse.redirect(url)
+  }
+  
+  const tokenRefreshedResult = await getNewAccessToken()
+
+  // IE token was refreshed, redirect to same page to fetch with new tollen
+  if (tokenRefreshedResult.tokenRefreshed) {
+    const url = request.nextUrl.clone()
+    url.searchParams.set("tokenRefreshed", 'true')
+    return NextResponse.redirect(url)
+  }
 
   const accessToken = request.cookies.get("accessToken")?.value || null;
 
