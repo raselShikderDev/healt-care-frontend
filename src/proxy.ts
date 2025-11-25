@@ -2,6 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { getDefaultDashboard, getRouteOwner, isAuthRoute, UserRole } from "./lib/authUtils";
 import { deleteCookie } from "./lib/tokenHandler";
+import { getUserInfo } from "./services/auth/getUserInfo";
 
 
 export async function proxy(request: NextRequest) {
@@ -48,6 +49,24 @@ export async function proxy(request: NextRequest) {
     loginUrl.searchParams.set("redirect", pathname);
     return NextResponse.redirect(loginUrl);
   }
+
+  // Rule 2.1 if user need to reset  password
+  if (accessToken) {
+    const userInfo = await getUserInfo()
+    if (userInfo.needPasswordChange) {
+      if (pathname !== "/reset-password") {
+        const resetPasswordUrl = new URL("/reset-password", request.url)
+        resetPasswordUrl.searchParams.set("redirect", pathname)
+        return NextResponse.redirect(resetPasswordUrl)
+      }
+      return NextResponse.next()
+    }
+    if (userInfo && userInfo.needPasswordChange && pathname === '/reset-password') {
+      return NextResponse.redirect(new URL(getDefaultDashboard(userRole as UserRole), request.url))
+    }
+  }
+
+
   // Rule 3: if use trying to acces common protected routes
   if (routeOwner === "COMMON") {
     return NextResponse.next();
