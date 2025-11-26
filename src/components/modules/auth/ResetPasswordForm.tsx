@@ -16,6 +16,7 @@ import { toast } from "react-toastify";
 
 const ResetPasswordForm = ({ redirect }: { redirect?: string }) => {
   const [state, formAction, isPending] = useActionState(resetPassword, null);
+  console.log({ state });
 
   useEffect(() => {
     if (state && !state.success && state.message) {

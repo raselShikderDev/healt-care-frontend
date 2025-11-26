@@ -39,6 +39,7 @@ export const logInUser = async (_currentState: any, formData: any) => {
       },
     });
     const data = await res.json();
+    console.log({ data });
 
     const setCookieHeader = res.headers.getSetCookie();
     console.log({ setCookieHeader });
@@ -104,14 +105,13 @@ export const logInUser = async (_currentState: any, formData: any) => {
       if (isValidRedirectRoute(requestedPath, userRole as UserRole)) {
         redirect(`/reset-password?redirect=${requestedPath}`);
       } else {
-        redirect(`/reset-password`)
+        redirect(`/reset-password`);
       }
     }
 
     if (data.data.needPasswordChange) {
-      redirect("/reset-password")
+      redirect("/reset-password");
     }
-
 
     if (redirectTo) {
       const requestedPath = redirectTo.toString();
@@ -130,10 +130,11 @@ export const logInUser = async (_currentState: any, formData: any) => {
     console.error(error);
     return {
       success: false,
-      message: `${process.env.NODE_ENV === "development"
-        ? error.message
-        : "Failed to login! you might have entered wrong credentials"
-        }`,
+      message: `${
+        process.env.NODE_ENV === "development"
+          ? error.message
+          : "Failed to login! you might have entered wrong credentials"
+      }`,
     };
   }
 };

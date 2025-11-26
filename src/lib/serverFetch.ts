@@ -9,16 +9,15 @@ const serverFetchHelper = async (
   const accessToken = await getCookie("accessToken");
 
   if (endpoint !== "/auth/refresh-token") {
-    await getNewAccessToken()   
+    await getNewAccessToken();
   }
-
 
   console.log({
     "api url hitted": `${
       process.env.NEXT_PUBLIC_BASE_URL as string
     }${endpoint}`,
   });
- 
+
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL as string}${endpoint}`,
     {
@@ -33,7 +32,7 @@ const serverFetchHelper = async (
     }
   );
 
-  // console.log({ response: await response.json() });
+  // console.log({ response });
 
   return response;
 };

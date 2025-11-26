@@ -34,7 +34,6 @@ const PublicNavbar = async (props: ComponentProps<typeof NavigationMenu>) => {
 
   const userInfo = (await getUserInfo()) as UserInfo;
   let dashboardHome;
-  console.log({ "userInfo?.role": userInfo?.role });
 
   if (userInfo && userInfo?.role) {
     dashboardHome = getDefaultDashboard(userInfo?.role as UserRole);
