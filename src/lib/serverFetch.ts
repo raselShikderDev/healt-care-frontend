@@ -1,3 +1,4 @@
+import { getNewAccessToken } from "@/services/auth/auth.service";
 import { getCookie } from "./tokenHandler";
 
 const serverFetchHelper = async (
@@ -7,13 +8,17 @@ const serverFetchHelper = async (
   const { headers, ...restOptions } = options;
   const accessToken = await getCookie("accessToken");
 
+  if (endpoint !== "/auth/refresh-token") {
+    await getNewAccessToken()   
+  }
+
+
   console.log({
     "api url hitted": `${
       process.env.NEXT_PUBLIC_BASE_URL as string
     }${endpoint}`,
   });
-  console.log({ restOptions: { ...restOptions } });
-
+ 
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL as string}${endpoint}`,
     {
