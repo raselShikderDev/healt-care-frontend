@@ -99,10 +99,19 @@ export const logInUser = async (_currentState: any, formData: any) => {
     if (!data.success) {
       throw new Error(data.message || "Login failed");
     }
-    console.log({ data });
 
-    console.log(`${getDefaultDashboard(userRole as UserRole)}?loggedIn=true`)
+    if (redirectTo && data.data.needPasswordChange) {
+      const requestedPath = redirectTo.toString();
+      if (isValidRedirectRoute(requestedPath, userRole as UserRole)) {
+        redirect(`/reset-password?redirect=${requestedPath}`);
+      } else {
+        redirect(`/reset-password`);
+      }
+    }
 
+    if (data.data.needPasswordChange) {
+      redirect("/reset-password");
+    }
 
     if (redirectTo) {
       const requestedPath = redirectTo.toString();

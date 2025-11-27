@@ -2,11 +2,15 @@
 import { serverFetch } from "@/lib/serverFetch";
 import { zodValidator } from "@/lib/zodValidator";
 import { creatSpecialitiesZodSchema } from "@/zod/specilaties.validation";
+import { revalidateTag } from "next/cache";
 
 
 export const getSpecilites = async () => {
   try {
-    const res = await serverFetch.get("/specialties");
+    const res = await serverFetch.get("/specialties", {
+      cache:"force-cache",
+      next:{tags:["specialities-list"]}
+    });
 
     const result = await res.json();
     return result;
@@ -51,6 +55,10 @@ export const createSpecilites = async (_prevData: any, formData: FormData) => {
     });
 
     const result = await res.json();
+
+    if (result.success) {
+      revalidateTag("specialities-list", "max")
+    }
 
     return result;
   } catch (error: any) {

@@ -11,21 +11,23 @@ import {
 import { useTransition } from "react";
 
 interface SelectFilterProps {
-  paramName?: string;
+  paramName: string;
   placheholder?: string;
+  defaultValue?:string;
   options: { label: string; value: string }[];
 }
 
 function SelectFilter({
-  paramName = "All",
+  paramName,
   placheholder,
+  defaultValue  = "All",
   options,
 }: SelectFilterProps) {
   const router = useRouter();
   const searchparams = useSearchParams();
   const [isPending, startTransition] = useTransition();
 
-  const currentValue = searchparams.get(paramName) || "";
+  const currentValue = searchparams.get(paramName) || defaultValue;
   console.log({currentValue});
   
 
@@ -34,7 +36,7 @@ function SelectFilter({
 
     const params = new URLSearchParams(searchparams.toString());
 
-    if (value === "All") {
+    if (value === defaultValue) {
       params.delete(paramName);
     } else if (value) {
       params.set(paramName, value);
@@ -58,7 +60,7 @@ function SelectFilter({
         <SelectValue placeholder={placheholder} />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="All">All</SelectItem>
+        <SelectItem value={defaultValue}>{defaultValue}</SelectItem>
         {options?.map((option) => (
           <SelectItem key={option?.value} value={option?.label}>
             {option?.label}

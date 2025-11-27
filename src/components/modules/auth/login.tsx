@@ -23,11 +23,12 @@ export default function LoginForm({ redirect }: { redirect?: string }) {
 
 
 useEffect(() => {
-    if (state && !state.success && state.message) {
-      toast.error(state.message);
-    }
-  }, [state]);
+  if (!state) return;
 
+  if ("message" in state && typeof state.message === "string") {
+    toast.error(state.message);
+  }
+}, [state]);
 
   return (
     <div className="">

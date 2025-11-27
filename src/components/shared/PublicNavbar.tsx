@@ -20,7 +20,7 @@ import { ComponentProps } from "react";
 import LogoutButton from "./logoutButton";
 import LogoutButtonMobile from "./logoutButtonMobile";
 import { getUserInfo } from "@/services/auth/getUserInfo";
-import { getDefaultDashboard } from "@/lib/authUtils";
+import { getDefaultDashboard, UserRole } from "@/lib/authUtils";
 import { UserInfo } from "@/types/user.interface";
 
 const PublicNavbar = async (props: ComponentProps<typeof NavigationMenu>) => {
@@ -33,9 +33,10 @@ const PublicNavbar = async (props: ComponentProps<typeof NavigationMenu>) => {
   ];
 
   const userInfo = (await getUserInfo()) as UserInfo;
-  const dashboardHome = getDefaultDashboard(userInfo?.role);
+  let dashboardHome;
 
   if (userInfo && userInfo?.role) {
+    dashboardHome = getDefaultDashboard(userInfo?.role as UserRole);
     navItems.push({
       name: "Dashboard",
       href: `/${dashboardHome.toLowerCase()}`,
@@ -69,7 +70,7 @@ const PublicNavbar = async (props: ComponentProps<typeof NavigationMenu>) => {
 
         <div className="flex items-center gap-3">
           {/* Desktop login button */}
-          {userInfo?.role ? (
+          {userInfo?.email ? (
             <LogoutButton />
           ) : (
             <Link
@@ -114,7 +115,7 @@ const PublicNavbar = async (props: ComponentProps<typeof NavigationMenu>) => {
 
                 {/* Footer inside sheet */}
                 <SheetFooter className="mt-auto border-t pt-4">
-                  {userInfo?.role ? (
+                  {userInfo?.email ? (
                     <LogoutButtonMobile />
                   ) : (
                     <Link

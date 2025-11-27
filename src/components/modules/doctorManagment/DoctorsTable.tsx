@@ -37,7 +37,6 @@ const DoctorTable = ({ doctors, specialities }: IDoctorTableProps) => {
 
   const handleEdit = (doctor: IDoctor) => {
     console.log({ "doctor edititng": doctor });
-
     setEditingDoctor(doctor);
   };
 
@@ -76,6 +75,7 @@ const DoctorTable = ({ doctors, specialities }: IDoctorTableProps) => {
       {/*  Edit doctor form */}
       <DoctorFormDialog
         open={!!editingDoctor}
+        doctor={editingDoctor as IDoctor}
         specialites={specialities}
         onClose={() => setEditingDoctor(null)}
         onSccucess={() => {
