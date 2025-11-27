@@ -1,4 +1,4 @@
-import AppointmentConfirmation from "@/components/modules/patient/AppointmentConfirmation";
+import AppointmentConfirmation from "@/components/modules/patient/patientApointment/AppointmentConfirmation";
 import { getDoctorById } from "@/services/admin/doctorManagament";
 import { getScheduleById } from "@/services/admin/schedulesManagement";
 
