@@ -7,7 +7,7 @@ import { IDoctorSchedule } from "@/types/schedule.interface";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { toast } from "react-toastify";
-import { myScheduleColumns } from "./myScheduleColumns";
+import { myScheduleColumns } from "./MyScheduleColumns";
 
 
 interface MySchedulesTableProps {
