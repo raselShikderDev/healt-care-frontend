@@ -4,13 +4,13 @@ import LogoutButton from "@/components/shared/logoutButton";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { logOutUser } from "@/services/auth/logoutUser";
-import { IUserInfo } from "@/types/user.interface";
+import { UserInfo } from "@/types/user.interface";
 import { Settings, User } from "lucide-react";
 import Link from "next/link";
 
 
 interface userDropdownProps {
-    userInfo: IUserInfo 
+    userInfo: UserInfo
 }
 
 const UserDropdown = ({ userInfo }: userDropdownProps) => {
